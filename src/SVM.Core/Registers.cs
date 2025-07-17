@@ -1,0 +1,41 @@
+﻿using SVM.Core.Utils;
+using System;
+using System.Runtime.InteropServices;
+using static SVM.Core.stdc.stdlib;
+namespace SVM.Core
+{
+	/// <summary>
+	/// Offset 0 is always 0.
+	/// </summary>
+	[StructLayout(LayoutKind.Sequential)]
+	public struct Registers : IDisposable
+	{
+		IntPtr Data;
+		uint Size;
+		public void Init(uint size)
+		{
+			Size = size;
+			Data = malloc(size);
+		}
+		public T ReadData<T>(int RegisterID) where T : unmanaged
+		{
+			if (RegisterID == 0) return default;
+			return Data.GetDataWithOffsetInBytes<T>(RegisterID * sizeof(Int64));
+		}
+		public T GetData<T>(int RegisterID) where T : unmanaged
+		{
+			if (RegisterID == 0) return default;
+			return Data.GetDataWithOffsetInBytes<T>(RegisterID * sizeof(Int64));
+		}
+		public unsafe void SetData<T>(int offset, T d) where T : unmanaged
+		{
+			if (offset == 0) return;
+			if (offset + sizeof(T) > Size) return;
+			((T*)(Data + offset))[0] = d;
+		}
+		public void Dispose()
+		{
+			free(Data);
+		}
+	}
+}

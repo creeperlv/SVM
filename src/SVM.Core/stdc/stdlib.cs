@@ -14,6 +14,10 @@ namespace SVM.Core.stdc
 		{
 			return Marshal.AllocHGlobal((int)size);
 		}
+		public static IntPtr malloc(int size)
+		{
+			return Marshal.AllocHGlobal(size);
+		}
 		public static IntPtr realloc(IntPtr ptr, uint size)
 		{
 			return Marshal.ReAllocHGlobal(ptr, (IntPtr)size);
