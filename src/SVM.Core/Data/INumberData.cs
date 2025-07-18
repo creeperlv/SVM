@@ -5,7 +5,7 @@ using System.Text;
 
 namespace SVM.Core.Data
 {
-	public interface INumbericData<T> : IPointerWritable where T : unmanaged
+	public interface INumbericData<T> : IPointerWritable, ICastable where T : unmanaged
 	{
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		T Add(T R);
@@ -19,13 +19,13 @@ namespace SVM.Core.Data
 		T Mod(T R);
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		SCVMSimpleResult<T> AddOF(T R);
+		SVMSimpleResult<T> AddOF(T R);
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		SCVMSimpleResult<T> SubOF(T R);
+		SVMSimpleResult<T> SubOF(T R);
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		SCVMSimpleResult<T> DivOF(T R);
+		SVMSimpleResult<T> DivOF(T R);
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		SCVMSimpleResult<T> MulOF(T R);
+		SVMSimpleResult<T> MulOF(T R);
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		bool LT(T R);
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -38,6 +38,9 @@ namespace SVM.Core.Data
 		bool EQ(T R);
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		bool NE(T R);
+	}
+	public interface ICastable
+	{
 		INumbericData<CompactByte> Cast_Byte();
 		INumbericData<CompactSByte> Cast_SByte();
 		INumbericData<CompactShort> Cast_Short();
@@ -49,17 +52,18 @@ namespace SVM.Core.Data
 		INumbericData<CompactDouble> Cast_Double();
 		INumbericData<CompactSingle> Cast_Float();
 	}
+
 	public unsafe interface IPointerWritable
 	{
 		public void Write(byte* targetPtr);
 		public int SizeOf();
 	}
-	public struct SCVMSimpleResult<T> where T : unmanaged
+	public struct SVMSimpleResult<T> where T : unmanaged
 	{
 		public bool IsSuccess;
 		public T Value;
 
-		public SCVMSimpleResult(bool isSuccess, T value)
+		public SVMSimpleResult(bool isSuccess, T value)
 		{
 			IsSuccess = isSuccess;
 			Value = value;

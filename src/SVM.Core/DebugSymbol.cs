@@ -7,9 +7,9 @@ namespace SVM.Core
 	{
 		public Dictionary<string, uint> Functions = new Dictionary<string, uint>();
 	}
-	public class RuntimeBinary
+	public unsafe class RuntimeBinary
 	{
-		public uint offset;
+		public SVMProgram* program;
 		public SimpleVirtualMachine? BindedMachine;
 		public DebugSymbol? Symbol;
 		public bool Invoke(string funcName)

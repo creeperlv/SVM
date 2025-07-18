@@ -72,7 +72,13 @@
 	}
 	public enum ConditionFlag
 	{
-		Cmp,
+		/// <summary>
+		/// Compare Flag
+		/// </summary>
+		CF,
+		/// <summary>
+		/// Overflow Flag
+		/// </summary>
 		Of,
 	}
 	public enum SIMDOperator : byte

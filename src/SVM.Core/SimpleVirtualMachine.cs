@@ -1,9 +1,9 @@
-﻿using SVM.Core.FuncImpl;
+﻿using SVM.Core.Data;
+using SVM.Core.FuncImpl;
 using SVM.Core.Utils;
 using System;
 using System.Collections.Generic;
 using System.Drawing;
-using System.IO;
 using System.Runtime.InteropServices;
 using static SVM.Core.stdc.stdlib;
 namespace SVM.Core
@@ -105,6 +105,9 @@ namespace SVM.Core
 					case SVMInstDef.UMath:
 						break;
 					case SVMInstDef.Cvt:
+						{
+							Convert(Instruction);
+						}
 						break;
 					case SVMInstDef.Cmp:
 						break;
@@ -148,6 +151,86 @@ namespace SVM.Core
 			PC++;
 			registers.SetData<ulong>((int)PCOffset, PC);
 		}
+
+		private void Convert(SVMInstruction Instruction)
+		{
+			var SType = Instruction.GetData<SVMNativeTypes>(1);
+			var TType = Instruction.GetData<SVMNativeTypes>(2);
+			var L = Instruction.GetData<byte>(3);
+			var T = Instruction.GetData<byte>(4);
+			ICastable castable;
+			switch (SType)
+			{
+				case SVMNativeTypes.Int8:
+					castable = registers.GetData<CompactSByte>(L);
+					break;
+				case SVMNativeTypes.Int16:
+					castable = registers.GetData<CompactShort>(L);
+					break;
+				case SVMNativeTypes.Int32:
+					castable = registers.GetData<CompactInt>(L);
+					break;
+				case SVMNativeTypes.Int64:
+					castable = registers.GetData<CompactLong>(L);
+					break;
+				case SVMNativeTypes.UInt8:
+					castable = registers.GetData<CompactByte>(L);
+					break;
+				case SVMNativeTypes.UInt16:
+					castable = registers.GetData<CompactUShort>(L);
+					break;
+				case SVMNativeTypes.UInt32:
+					castable = registers.GetData<CompactUInt>(L);
+					break;
+				case SVMNativeTypes.UInt64:
+					castable = registers.GetData<CompactULong>(L);
+					break;
+				case SVMNativeTypes.Float:
+					castable = registers.GetData<CompactSingle>(L);
+					break;
+				case SVMNativeTypes.Double:
+					castable = registers.GetData<CompactDouble>(L);
+					break;
+				default:
+					return;
+			}
+			switch (TType)
+			{
+				case SVMNativeTypes.Int8:
+					castable.Cast_SByte().Write(registers.GetPtr(T));
+					break;
+				case SVMNativeTypes.Int16:
+					castable.Cast_Short().Write(registers.GetPtr(T));
+					break;
+				case SVMNativeTypes.Int32:
+					castable.Cast_Int().Write(registers.GetPtr(T));
+					break;
+				case SVMNativeTypes.Int64:
+					castable.Cast_Long().Write(registers.GetPtr(T));
+					break;
+				case SVMNativeTypes.UInt8:
+					castable.Cast_Byte().Write(registers.GetPtr(T));
+					break;
+				case SVMNativeTypes.UInt16:
+					castable.Cast_UShort().Write(registers.GetPtr(T));
+					break;
+				case SVMNativeTypes.UInt32:
+					castable.Cast_UInt().Write(registers.GetPtr(T));
+					break;
+				case SVMNativeTypes.UInt64:
+					castable.Cast_ULong().Write(registers.GetPtr(T));
+					break;
+				case SVMNativeTypes.Float:
+					castable.Cast_Float().Write(registers.GetPtr(T));
+					break;
+				case SVMNativeTypes.Double:
+					castable.Cast_Double().Write(registers.GetPtr(T));
+					break;
+				default:
+					break;
+			}
+		}
+
 		public IntPtr GetPointer(ulong PC)
 		{
 			return GetPointer(new SVMPointer() { offset = (uint)PC, index = 0 });
@@ -229,24 +312,12 @@ namespace SVM.Core
 		/// </summary>
 		public uint EIDRegisterID;
 	}
-	public unsafe struct SVMProgram
-	{
-		public UInt64 InstructionCount;
-		public UInt64 DataSize;
-		public SVMInstruction* instructions;
-		public byte* data;
-		public static SVMProgram* LoadFromStream(Stream stream)
-		{
-			var program = (SVMProgram*)malloc(sizeof(SVMProgram));
-
-			return program;
-		}
-	}
 	public delegate void FuncCall(SimpleVirtualMachine machine);
 	[StructLayout(LayoutKind.Sequential)]
 	public struct MState
 	{
 		public byte OF;
+		public byte CF;
 	}
 	[StructLayout(LayoutKind.Sequential)]
 	public struct MemoryBlock : IDisposable

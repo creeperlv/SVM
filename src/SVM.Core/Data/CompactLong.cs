@@ -29,7 +29,7 @@ namespace SVM.Core.Data
 		{
 			return new CompactLong(Value / R.Value);
 		}
-		public SCVMSimpleResult<CompactLong> AddOF(CompactLong R)
+		public SVMSimpleResult<CompactLong> AddOF(CompactLong R)
 		{
 			CompactLong result = default;
 			bool IsOF = false;
@@ -48,10 +48,10 @@ namespace SVM.Core.Data
 					}
 				}
 			}
-			return new SCVMSimpleResult<CompactLong>(IsOF, result);
+			return new SVMSimpleResult<CompactLong>(IsOF, result);
 		}
 
-		public SCVMSimpleResult<CompactLong> SubOF(CompactLong R)
+		public SVMSimpleResult<CompactLong> SubOF(CompactLong R)
 		{
 			CompactLong result = default;
 			bool IsOF = false;
@@ -70,10 +70,10 @@ namespace SVM.Core.Data
 					}
 				}
 			}
-			return new SCVMSimpleResult<CompactLong>(IsOF, result);
+			return new SVMSimpleResult<CompactLong>(IsOF, result);
 		}
 
-		public SCVMSimpleResult<CompactLong> DivOF(CompactLong R)
+		public SVMSimpleResult<CompactLong> DivOF(CompactLong R)
 		{
 			CompactLong result = default;
 			bool IsOF = false;
@@ -92,10 +92,10 @@ namespace SVM.Core.Data
 					}
 				}
 			}
-			return new SCVMSimpleResult<CompactLong>(IsOF, result);
+			return new SVMSimpleResult<CompactLong>(IsOF, result);
 		}
 
-		public SCVMSimpleResult<CompactLong> MulOF(CompactLong R)
+		public SVMSimpleResult<CompactLong> MulOF(CompactLong R)
 		{
 			CompactLong result = default;
 			bool IsOF = false;
@@ -114,7 +114,7 @@ namespace SVM.Core.Data
 					}
 				}
 			}
-			return new SCVMSimpleResult<CompactLong>(IsOF, result);
+			return new SVMSimpleResult<CompactLong>(IsOF, result);
 		}
 
 		public bool LT(CompactLong R)

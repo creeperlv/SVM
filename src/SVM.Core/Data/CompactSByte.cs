@@ -30,7 +30,7 @@ namespace SVM.Core.Data
 		{
 			return new CompactSByte(Value / R.Value);
 		}
-		public SCVMSimpleResult<CompactSByte> AddOF(CompactSByte R)
+		public SVMSimpleResult<CompactSByte> AddOF(CompactSByte R)
 		{
 			CompactSByte result = default;
 			bool IsOF = false;
@@ -49,10 +49,10 @@ namespace SVM.Core.Data
 					}
 				}
 			}
-			return new SCVMSimpleResult<CompactSByte>(IsOF, result);
+			return new SVMSimpleResult<CompactSByte>(IsOF, result);
 		}
 
-		public SCVMSimpleResult<CompactSByte> SubOF(CompactSByte R)
+		public SVMSimpleResult<CompactSByte> SubOF(CompactSByte R)
 		{
 			CompactSByte result = default;
 			bool IsOF = false;
@@ -71,10 +71,10 @@ namespace SVM.Core.Data
 					}
 				}
 			}
-			return new SCVMSimpleResult<CompactSByte>(IsOF, result);
+			return new SVMSimpleResult<CompactSByte>(IsOF, result);
 		}
 
-		public SCVMSimpleResult<CompactSByte> DivOF(CompactSByte R)
+		public SVMSimpleResult<CompactSByte> DivOF(CompactSByte R)
 		{
 			CompactSByte result = default;
 			bool IsOF = false;
@@ -93,10 +93,10 @@ namespace SVM.Core.Data
 					}
 				}
 			}
-			return new SCVMSimpleResult<CompactSByte>(IsOF, result);
+			return new SVMSimpleResult<CompactSByte>(IsOF, result);
 		}
 
-		public SCVMSimpleResult<CompactSByte> MulOF(CompactSByte R)
+		public SVMSimpleResult<CompactSByte> MulOF(CompactSByte R)
 		{
 			CompactSByte result = default;
 			bool IsOF = false;
@@ -115,7 +115,7 @@ namespace SVM.Core.Data
 					}
 				}
 			}
-			return new SCVMSimpleResult<CompactSByte>(IsOF, result);
+			return new SVMSimpleResult<CompactSByte>(IsOF, result);
 		}
 
 		public bool LT(CompactSByte R)

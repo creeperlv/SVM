@@ -27,6 +27,11 @@ namespace SVM.Core
 			if (RegisterID == 0) return default;
 			return Data.GetDataWithOffsetInBytes<T>(RegisterID * sizeof(Int64));
 		}
+		public unsafe byte* GetPtr(int RegisterID)
+		{
+			if (RegisterID == 0) return null;
+			return ((byte*)Data) + RegisterID * sizeof(long);
+		}
 		public unsafe void SetData<T>(int offset, T d) where T : unmanaged
 		{
 			if (offset == 0) return;
