@@ -5,4 +5,12 @@
     <Nullable>enable</Nullable>
   </PropertyGroup>
 
+  <ItemGroup>
+    <PackageReference Include="LibCLCC.NET" Version="1.32.33" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\SVM.Core\SVM.Core.csproj" />
+  </ItemGroup>
+
 </Project>
