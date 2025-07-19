@@ -1,9 +1,15 @@
 ﻿using SVM.Core.Utils;
 using System;
+using System.Collections.Generic;
 using System.IO;
 using static SVM.Core.stdc.stdlib;
 namespace SVM.Core
 {
+	public unsafe class ManagedSVMProgram
+	{
+		public List<SVMInstruction> instructions = new List<SVMInstruction>();
+		public List<byte> Datas = new List<byte>();
+	}
 	public unsafe struct SVMProgram : IDisposable
 	{
 		public UInt64 InstructionCount;
