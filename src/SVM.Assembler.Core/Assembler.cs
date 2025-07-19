@@ -68,6 +68,7 @@ LabelConstant InternalLbl
 			lexer.Content = input;
 			lexer.SourceID = ID;
 			OperationResult<IntermediateObject> operationResult = new OperationResult<IntermediateObject>();
+			InternalLabel CurrentLabel = InternalLabel.Code;
 			while (true)
 			{
 				var lexResult = lexer.Lex();
@@ -76,8 +77,40 @@ LabelConstant InternalLbl
 				switch (r.LexSegmentId)
 				{
 					case "InternalLbl":
+						switch (r.LexMatchedItemId)
+						{
+							case "LabelCode":
+								CurrentLabel = InternalLabel.Code;
+								break;
+							case "LabelData":
+								CurrentLabel = InternalLabel.Data;
+								break;
+							case "LabelConstant":
+								CurrentLabel = InternalLabel.Const;
+								break;
+							default:
+								break;
+						}
 						break;
 					default:
+						switch (CurrentLabel)
+						{
+							case InternalLabel.Code:
+								switch (r.LexSegmentId)
+								{
+									case "GenericLabel":
+										break;
+									default:
+										break;
+								}
+								break;
+							case InternalLabel.Data:
+								break;
+							case InternalLabel.Const:
+								break;
+							default:
+								break;
+						}
 						break;
 				}
 			}
@@ -85,10 +118,15 @@ LabelConstant InternalLbl
 			return operationResult;
 		}
 	}
+	public enum InternalLabel
+	{
+		Code, Data, Const
+	}
 	[Serializable]
 	public class IntermediateObject
 	{
 		public Dictionary<string, string> data = new Dictionary<string, string>();
+		public Dictionary<string, string> consts = new Dictionary<string, string>();
 		public List<IntermediateInstruction> instructions = new List<IntermediateInstruction>();
 	}
 	[Serializable]
