@@ -1,6 +1,6 @@
 ﻿namespace SVM.Core
 {
-	public enum SVMInstDef : byte
+	public enum PrimaryInstruction : byte
 	{
 		// 0	1		2		3		4		5		6
 		// Math	[I]Op	[I]Type	[R]L	[R]R	[R]T	[I]CheckOF

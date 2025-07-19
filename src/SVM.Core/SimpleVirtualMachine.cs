@@ -72,7 +72,7 @@ namespace SVM.Core
 
 				switch (def)
 				{
-					case SVMInstDef.BMath:
+					case PrimaryInstruction.BMath:
 						{
 							var Op = Instruction.GetData<BMathOp>(1);
 							var NativeType = Instruction.GetData<SVMNativeTypes>(2);
@@ -102,16 +102,16 @@ namespace SVM.Core
 							}
 						}
 						break;
-					case SVMInstDef.UMath:
+					case PrimaryInstruction.UMath:
 						break;
-					case SVMInstDef.Cvt:
+					case PrimaryInstruction.Cvt:
 						{
 							Convert(Instruction);
 						}
 						break;
-					case SVMInstDef.Cmp:
+					case PrimaryInstruction.Cmp:
 						break;
-					case SVMInstDef.SD:
+					case PrimaryInstruction.SD:
 						{
 							var Reg = Instruction.GetData<byte>(1);
 							PC++;
@@ -120,19 +120,19 @@ namespace SVM.Core
 							registers.SetData(Reg, data);
 						}
 						break;
-					case SVMInstDef.JAL:
+					case PrimaryInstruction.JAL:
 						break;
-					case SVMInstDef.JALF:
+					case PrimaryInstruction.JALF:
 						break;
-					case SVMInstDef.Load:
+					case PrimaryInstruction.Load:
 						break;
-					case SVMInstDef.Save:
+					case PrimaryInstruction.Save:
 						break;
-					case SVMInstDef.Call:
+					case PrimaryInstruction.Call:
 						break;
-					case SVMInstDef.Return:
+					case PrimaryInstruction.Return:
 						break;
-					case SVMInstDef.System:
+					case PrimaryInstruction.System:
 						if (Config != null)
 						{
 							var target = Instruction.GetData<uint>(1);
@@ -142,7 +142,7 @@ namespace SVM.Core
 							}
 						}
 						break;
-					case SVMInstDef.SIMD:
+					case PrimaryInstruction.SIMD:
 						break;
 					default:
 						break;
@@ -351,11 +351,11 @@ namespace SVM.Core
 				return ((T*)(((byte*)dataPtr) + offset))[0];
 			}
 		}
-		public SVMInstDef GetDef()
+		public PrimaryInstruction GetDef()
 		{
 			fixed (ulong* dataPtr = &data)
 			{
-				return ((SVMInstDef*)dataPtr)[0];
+				return ((PrimaryInstruction*)dataPtr)[0];
 			}
 		}
 	}
