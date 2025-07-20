@@ -8,7 +8,7 @@ namespace SVM.Assembler.Core
 	public class InstructionDefinition
 	{
 		public PrimaryInstruction PrimaryInstruction = PrimaryInstruction.Nop;
-		public List<string> aliases = new List<string>();
+		public List<string> Aliases = new List<string>();
 		public List<InstructionParameter> ParameterPattern = new List<InstructionParameter>();
 	}
 }
