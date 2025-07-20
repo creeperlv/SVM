@@ -41,5 +41,10 @@ namespace SVM.Core.Utils
 		{
 			GetDataWithOffsetInStructCount<T>(ptr, (IntPtr)dest, offset);
 		}
+		public static void SetData<T>(this IntPtr ptr, T data) where T : unmanaged
+		{
+			var srcPtr = (byte*)&data;
+			Buffer.MemoryCopy(srcPtr, (byte*)ptr, sizeof(T), sizeof(T));
+		}
 	}
 }

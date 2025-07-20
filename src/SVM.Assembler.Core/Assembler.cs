@@ -6,7 +6,7 @@ using System.Collections.Generic;
 
 namespace SVM.Assembler.Core
 {
-	public delegate OperationResult<IntermediateInstruction?> AssemblerFunction(ILexer lexer, IntermediateInstruction instruction, LexSegment leadingSegment);
+	public delegate OperationResult<SVMInstruction> LinkerFunction(LinkingContext context, IntermediateInstruction instruction);
 	public class Assembler
 	{
 		public const string LexDefinition =
@@ -55,13 +55,15 @@ LabelData InternalLbl
 LabelConstant InternalLbl
 ";
 		LexerDefinition? definition;
-		public Dictionary<string, AssemblerFunction> assemblerFunctions = new Dictionary<string, AssemblerFunction>();
-		public Assembler()
+		public ISADefinition ISA;
+		public Assembler(ISADefinition isaDefinition)
 		{
 			if (LexerDefinition.TryParse(LexDefinition, out definition))
 			{
 				definition.Substitute();
 			}
+
+			ISA = isaDefinition;
 		}
 		public OperationResult<LexSegment?> Lex(ILexer lexer)
 		{
@@ -113,11 +115,32 @@ LabelConstant InternalLbl
 			{
 				return operationResult;
 			}
-			if (!assemblerFunctions.TryGetValue(LexDef.LexMatchedItemId, out var assemblerFunction))
+			if (!ISA.InstructionDefinitions.TryGetValue(LexDef.LexMatchedItemId, out var instructionDef))
 			{
 				return operationResult;
 			}
-			return assemblerFunction(lexer, intermediateInstruction, LexDef);
+			foreach (var item in instructionDef.ParameterPattern)
+			{
+				var next = Lex(lexer);
+				if (operationResult.CheckAndInheritErrorAndWarnings(next))
+				{
+					return operationResult;
+				}
+				if (next.Result is null)
+				{
+					return operationResult;
+				}
+				if (next.Result.LexSegmentId is null)
+				{
+					return operationResult;
+				}
+				if (!item.AllowedTokenIds.Contains(next.Result.LexSegmentId))
+				{
+					return operationResult;
+				}
+				intermediateInstruction.Parameters.Add(next.Result);
+			}
+			return intermediateInstruction;
 		}
 		public OperationResult<IntermediateObject> AssembleIntermediateObject(string input, string ID = "main.asm")
 		{

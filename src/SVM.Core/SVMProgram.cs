@@ -8,7 +8,7 @@ namespace SVM.Core
 	public unsafe class ManagedSVMProgram
 	{
 		public List<SVMInstruction> instructions = new List<SVMInstruction>();
-		public List<byte> Datas = new List<byte>();
+		public byte[]? Datas;
 	}
 	public unsafe struct SVMProgram : IDisposable
 	{
