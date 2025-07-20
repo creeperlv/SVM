@@ -2,9 +2,14 @@
 {
 	public enum PrimaryInstruction : byte
 	{
-		// 0	1		2		3		4		5		6
-		// Math	[I]Op	[I]Type	[R]L	[R]R	[R]T	[I]CheckOF
+		Nop,
+		// 0	1		2		3		4		5
+		// Math	[I]Op	[I]Type	[R]L	[R]R	[R]T
 		BMath,
+		/// <summary>
+		/// Checked Binary Math
+		/// </summary>
+		CBMath,
 		// 0	1		2		3		4
 		// Math	[I]Op	[I]Type	[R]L	[R]T
 		UMath,

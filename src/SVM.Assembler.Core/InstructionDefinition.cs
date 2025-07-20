@@ -7,15 +7,8 @@ namespace SVM.Assembler.Core
 	[Serializable]
 	public class InstructionDefinition
 	{
-		public string MatchID;
-		public PrimaryInstruction PrimaryInstruction;
-		public LinkerFunction linkerFunction;
-		public InstructionDefinition(string matchID, LinkerFunction assemblerFunction)
-		{
-			MatchID = matchID;
-			this.linkerFunction = assemblerFunction;
-		}
-
+		public PrimaryInstruction PrimaryInstruction = PrimaryInstruction.Nop;
+		public List<string> aliases = new List<string>();
 		public List<InstructionParameter> ParameterPattern = new List<InstructionParameter>();
 	}
 }

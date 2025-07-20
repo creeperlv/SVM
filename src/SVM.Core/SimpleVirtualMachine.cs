@@ -79,20 +79,48 @@ namespace SVM.Core
 							var L = Instruction.GetData<byte>(3);
 							var R = Instruction.GetData<byte>(4);
 							var T = Instruction.GetData<byte>(5);
-							var Of = Instruction.GetData<byte>(6);
 							switch (Op)
 							{
 								case BMathOp.Add:
-									MathImpl.MathAdd(registers, statePtr, NativeType, L, R, T, Of == 1);
+									MathImpl.MathAdd(registers, statePtr, NativeType, L, R, T, false);
 									break;
 								case BMathOp.Sub:
-									MathImpl.MathSub(registers, statePtr, NativeType, L, R, T, Of == 1);
+									MathImpl.MathSub(registers, statePtr, NativeType, L, R, T, false);
 									break;
 								case BMathOp.Mul:
-									MathImpl.MathMul(registers, statePtr, NativeType, L, R, T, Of == 1);
+									MathImpl.MathMul(registers, statePtr, NativeType, L, R, T, false);
 									break;
 								case BMathOp.Div:
-									MathImpl.MathDiv(registers, statePtr, NativeType, L, R, T, Of == 1);
+									MathImpl.MathDiv(registers, statePtr, NativeType, L, R, T, false);
+									break;
+								case BMathOp.Mod:
+									MathImpl.MathMod(registers, statePtr, NativeType, L, R, T);
+									break;
+								default:
+									break;
+							}
+						}
+						break;
+					case PrimaryInstruction.CBMath:
+						{
+							var Op = Instruction.GetData<BMathOp>(1);
+							var NativeType = Instruction.GetData<SVMNativeTypes>(2);
+							var L = Instruction.GetData<byte>(3);
+							var R = Instruction.GetData<byte>(4);
+							var T = Instruction.GetData<byte>(5);
+							switch (Op)
+							{
+								case BMathOp.Add:
+									MathImpl.MathAdd(registers, statePtr, NativeType, L, R, T, true);
+									break;
+								case BMathOp.Sub:
+									MathImpl.MathSub(registers, statePtr, NativeType, L, R, T, true);
+									break;
+								case BMathOp.Mul:
+									MathImpl.MathMul(registers, statePtr, NativeType, L, R, T, true);
+									break;
+								case BMathOp.Div:
+									MathImpl.MathDiv(registers, statePtr, NativeType, L, R, T, true);
 									break;
 								case BMathOp.Mod:
 									MathImpl.MathMod(registers, statePtr, NativeType, L, R, T);

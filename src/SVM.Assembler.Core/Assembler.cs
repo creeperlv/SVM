@@ -115,7 +115,7 @@ LabelConstant InternalLbl
 			{
 				return operationResult;
 			}
-			if (!ISA.InstructionDefinitions.TryGetValue(LexDef.LexMatchedItemId, out var instructionDef))
+			if (!ISA.InstructionDefinitionAliases.TryGetValue(LexDef.LexMatchedItemId, out var instructionDef))
 			{
 				return operationResult;
 			}

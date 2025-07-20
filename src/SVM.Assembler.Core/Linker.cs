@@ -37,6 +37,12 @@ namespace SVM.Assembler.Core
 			}
 			return operationResult;
 		}
+		public static OperationResult<SVMInstruction> translate(InstructionDefinition def, LinkingContext context, IntermediateInstruction iinstruction)
+		{
+			OperationResult<SVMInstruction> result = new OperationResult<SVMInstruction>();
+
+			return result;
+		}
 		public unsafe static OperationResult<ManagedSVMProgram?> Finialize(ISADefinition definition, IntermediateObject Obj)
 		{
 			OperationResult<ManagedSVMProgram?> operationResult = new OperationResult<ManagedSVMProgram?>(null);
@@ -60,9 +66,10 @@ namespace SVM.Assembler.Core
 			}
 			foreach (var item in Obj.instructions)
 			{
-				if (definition.LinkerFunctions.TryGetValue(item.inst, out var func))
+				if (definition.InstructionDefinitions.TryGetValue(item.inst, out var def))
 				{
-					var inst = func(context, item);
+
+					var inst = translate(def, context, item);
 					if (operationResult.CheckAndInheritErrorAndWarnings(inst))
 					{
 						return operationResult;

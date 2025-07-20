@@ -9,6 +9,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SVM.Standalone", "SVM.Stand
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SVM.Assembler.Core", "SVM.Assembler.Core\SVM.Assembler.Core.csproj", "{B51D33D7-920B-44DE-8EB8-F8E8DFAE4CA8}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SVM.Assembler", "SVM.Assembler\SVM.Assembler.csproj", "{E2B82455-3947-4C11-82D0-178E8D8C3D64}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -55,6 +57,18 @@ Global
 		{B51D33D7-920B-44DE-8EB8-F8E8DFAE4CA8}.Release|x64.Build.0 = Release|Any CPU
 		{B51D33D7-920B-44DE-8EB8-F8E8DFAE4CA8}.Release|x86.ActiveCfg = Release|Any CPU
 		{B51D33D7-920B-44DE-8EB8-F8E8DFAE4CA8}.Release|x86.Build.0 = Release|Any CPU
+		{E2B82455-3947-4C11-82D0-178E8D8C3D64}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E2B82455-3947-4C11-82D0-178E8D8C3D64}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E2B82455-3947-4C11-82D0-178E8D8C3D64}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{E2B82455-3947-4C11-82D0-178E8D8C3D64}.Debug|x64.Build.0 = Debug|Any CPU
+		{E2B82455-3947-4C11-82D0-178E8D8C3D64}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{E2B82455-3947-4C11-82D0-178E8D8C3D64}.Debug|x86.Build.0 = Debug|Any CPU
+		{E2B82455-3947-4C11-82D0-178E8D8C3D64}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E2B82455-3947-4C11-82D0-178E8D8C3D64}.Release|Any CPU.Build.0 = Release|Any CPU
+		{E2B82455-3947-4C11-82D0-178E8D8C3D64}.Release|x64.ActiveCfg = Release|Any CPU
+		{E2B82455-3947-4C11-82D0-178E8D8C3D64}.Release|x64.Build.0 = Release|Any CPU
+		{E2B82455-3947-4C11-82D0-178E8D8C3D64}.Release|x86.ActiveCfg = Release|Any CPU
+		{E2B82455-3947-4C11-82D0-178E8D8C3D64}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
