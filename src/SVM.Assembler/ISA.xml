@@ -13,34 +13,34 @@
 					<MatchingItems>
 						<Item Id="String"/>
 					</MatchingItems>
-					<ExpectedValue Type="Byte" Pos="1" Converter="InternalEnum:bOp" />
+					<ExpectedValue Type="UInt8" Pos="1" Converter="InternalEnum:bOp" />
 				</InstructionParameter>
 				<InstructionParameter>
 					<MatchingItems>
 						<Item Id="String"/>
 					</MatchingItems>
-					<ExpectedValue Type="Byte" Pos="2" Converter="InternalEnum:NativeType" />
-				</InstructionParameter>
-				<InstructionParameter>
-					<MatchingItems>
-						<Item Id="String"/>
-						<Item Id="Register"/>
-					</MatchingItems>
-					<ExpectedValue Type="Byte" Pos="3" Converter="Register" />
+					<ExpectedValue Type="UInt8" Pos="2" Converter="InternalEnum:NativeType" />
 				</InstructionParameter>
 				<InstructionParameter>
 					<MatchingItems>
 						<Item Id="String"/>
 						<Item Id="Register"/>
 					</MatchingItems>
-					<ExpectedValue Type="Byte" Pos="4" Converter="Register" />
+					<ExpectedValue Type="UInt8" Pos="3" Converter="Register" />
 				</InstructionParameter>
 				<InstructionParameter>
 					<MatchingItems>
 						<Item Id="String"/>
 						<Item Id="Register"/>
 					</MatchingItems>
-					<ExpectedValue Type="Byte" Pos="5" Converter="Register" />
+					<ExpectedValue Type="UInt8" Pos="4" Converter="Register" />
+				</InstructionParameter>
+				<InstructionParameter>
+					<MatchingItems>
+						<Item Id="String"/>
+						<Item Id="Register"/>
+					</MatchingItems>
+					<ExpectedValue Type="UInt8" Pos="5" Converter="Register" />
 				</InstructionParameter>
 			</Parameters>
 		</InstructionDefinition>

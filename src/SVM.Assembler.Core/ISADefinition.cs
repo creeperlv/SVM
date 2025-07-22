@@ -58,17 +58,68 @@ namespace SVM.Assembler.Core
 				}
 			}
 		}
+		static bool ParseParameter(XmlNode node, ref InstructionDefinition instruction)
+		{
+			Console.WriteLine("Parse:Parameter");
+			InstructionParameter parameter = new InstructionParameter();
+			foreach (XmlNode subNode in node)
+			{
+				switch (subNode.Name)
+				{
+					case "MatchingItems":
+						foreach (XmlNode item in subNode.ChildNodes)
+						{
+							if (item.Name == "Item")
+							{
+								var result = item.Attributes.GetNamedItem("Id");
+								if (result == null) return false;
+								Console.WriteLine($"Item:{result.InnerText}");
+								parameter.AllowedTokenIds.Add(result.InnerText);
+							}
+						}
+						break;
+					case "ExpectedValue":
+						{
+							var TypeAttr = subNode.Attributes.GetNamedItem("Type");
+							var PosAttr = subNode.Attributes.GetNamedItem("Pos");
+							var ConverterAttr = subNode.Attributes.GetNamedItem("Converter");
+							if (TypeAttr == null) return false;
+							if (PosAttr == null) return false;
+							if (ConverterAttr == null) return false;
+							if (!Enum.TryParse<SVMNativeTypes>(TypeAttr.InnerText, out var nType))
+							{
+								Console.WriteLine($"ParseSVMNativeTypes:{TypeAttr.InnerText}");
+								return false;
+							}
+							if (!int.TryParse(PosAttr.InnerText, out var pos))
+							{
+								Console.WriteLine($"ParseInt:{PosAttr.InnerText}");
+								return false;
+							}
+							parameter.ExpectdValue.Type = nType;
+							parameter.ExpectdValue.Pos = pos;
+							parameter.ExpectdValue.Converter = ConverterAttr.InnerText;
+						}
+						break;
+					default:
+						return false;
+				}
+			}
+			return true;
+		}
 		static bool ParseDefinition(XmlNode node, ref ISADefinition definition)
 		{
-
+			Console.WriteLine($"ParseDefinition:{node.Name}");
 			InstructionDefinition instDefinition = new InstructionDefinition();
 			foreach (XmlNode item in node.ChildNodes)
 			{
+				Console.WriteLine($"{item.Name}");
 				switch (item.Name)
 				{
 					case "Aliases":
 						foreach (XmlNode aliasNode in item.ChildNodes)
 						{
+							Console.WriteLine($"Aliases->{aliasNode.Name}");
 							if (aliasNode.Name == "Alias")
 							{
 								instDefinition.Aliases.Add(aliasNode.Attributes["Name"].Value);
@@ -80,27 +131,41 @@ namespace SVM.Assembler.Core
 						}
 						break;
 					case "Parameters":
-
+						foreach (XmlNode parameterNode in item.ChildNodes)
+						{
+							Console.WriteLine($"Parameters->{parameterNode.Name}");
+							if (parameterNode.Name == "InstructionParameter")
+							{
+								if (!ParseParameter(parameterNode, ref instDefinition))
+								{
+									return false;
+								}
+							}
+							else
+							{
+								return false;
+							}
+						}
 						break;
 					default:
+						Console.WriteLine($"???{item.Name}");
 						break;
-				}
-				if (item.Name != "InstructionDefinition")
-				{
-					return false;
 				}
 			}
 			return true;
 		}
 		static bool ParseDefinitions(XmlNode node, ref ISADefinition definition)
 		{
+			Console.WriteLine("Parse:Definitions");
 			foreach (XmlNode item in node.ChildNodes)
 			{
 				if (item.Name != "InstructionDefinition")
 				{
+					Console.WriteLine($"Not Matching:{item.Name}");
+
 					return false;
 				}
-				if (ParseDefinition(node, ref definition) == false)
+				if (ParseDefinition(item, ref definition) == false)
 				{
 					return false;
 				}
@@ -112,26 +177,34 @@ namespace SVM.Assembler.Core
 			XmlDocument xmlDocument = new XmlDocument();
 			xmlDocument.Load(inputStream);
 			ISADefinition isaDefinition = new ISADefinition();
-			foreach (XmlNode item in xmlDocument.ChildNodes)
+			foreach (XmlNode rootNode in xmlDocument.ChildNodes)
 			{
-				ShowNode(item, 0);
-				switch (item.Name)
+				//ShowNode(rootNode, 0);
+				if (rootNode.Name == "ISARoot")
 				{
-					case "Enums":
-						break;
-					case "Definitions":
-						if (ParseDefinitions(item, ref isaDefinition) == false)
+					foreach (XmlNode item in rootNode)
+					{
+
+						switch (item.Name)
 						{
-							definition = null;
-							return false;
+							case "Enums":
+								break;
+							case "Definitions":
+								if (ParseDefinitions(item, ref isaDefinition) == false)
+								{
+									definition = null;
+									return false;
+								}
+								break;
+							default:
+								Console.WriteLine("Unknown Node!");
+								break;
 						}
-						break;
-					default:
-						break;
+					}
 				}
 			}
-			definition = null;
-			return false;
+			definition = isaDefinition;
+			return true;
 		}
 	}
 }
