@@ -1,7 +1,6 @@
-﻿using SVM.Assembler.Core;
+﻿using Newtonsoft.Json;
+using SVM.Assembler.Core;
 using System.Reflection;
-using System.Runtime.Serialization;
-using System.Xml.Serialization;
 
 namespace SVM.Assembler
 {
@@ -15,11 +14,12 @@ namespace SVM.Assembler
 				Console.WriteLine("Cannot find ISA definition!");
 				return;
 			}
-			if(!ISADefinition.TryParse(fs, out var def))
+			if (!ISADefinition.TryParse(fs, out var def))
 			{
 				Console.WriteLine("Cannot load ISA definition!");
 				return;
 			}
+			Console.WriteLine(JsonConvert.SerializeObject(def, Formatting.Indented));
 		}
 	}
 }

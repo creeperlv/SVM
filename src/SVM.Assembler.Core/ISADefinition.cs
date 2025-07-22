@@ -12,6 +12,7 @@ namespace SVM.Assembler.Core
 	[Serializable]
 	public class ISADefinition
 	{
+		public Dictionary<string, Dictionary<string, string>> Enums = new Dictionary<string, Dictionary<string, string>>();
 		public Dictionary<PrimaryInstruction, InstructionDefinition> InstructionDefinitions = new Dictionary<PrimaryInstruction, InstructionDefinition>();
 		[NonSerialized]
 		public Dictionary<string, InstructionDefinition> InstructionDefinitionAliases = new Dictionary<string, InstructionDefinition>();
@@ -111,6 +112,13 @@ namespace SVM.Assembler.Core
 		{
 			Console.WriteLine($"ParseDefinition:{node.Name}");
 			InstructionDefinition instDefinition = new InstructionDefinition();
+			var PIAttr = node.Attributes.GetNamedItem("PrimaryInstruction");
+			if (PIAttr == null) return false;
+			if (!Enum.TryParse<PrimaryInstruction>(PIAttr.InnerText, out var pi))
+			{
+				return false;
+			}
+			instDefinition.PrimaryInstruction = pi;
 			foreach (XmlNode item in node.ChildNodes)
 			{
 				Console.WriteLine($"{item.Name}");
@@ -152,6 +160,7 @@ namespace SVM.Assembler.Core
 						break;
 				}
 			}
+			definition.InstructionDefinitions.Add(pi, instDefinition);
 			return true;
 		}
 		static bool ParseDefinitions(XmlNode node, ref ISADefinition definition)
@@ -188,6 +197,48 @@ namespace SVM.Assembler.Core
 						switch (item.Name)
 						{
 							case "Enums":
+								{
+									foreach (XmlNode enumNode in item.ChildNodes)
+									{
+										if (enumNode.Name == "Enum")
+										{
+											Dictionary<string, string> enumItem = new Dictionary<string, string>();
+											var EnumNameAttr = enumNode.Attributes.GetNamedItem("Name");
+											if (EnumNameAttr == null)
+											{
+												definition = null;
+												return false;
+											}
+											foreach (XmlNode enumItemNode in enumNode.ChildNodes)
+											{
+
+												if (enumItemNode.Name == "Item")
+												{
+
+													var keyAttr = enumItemNode.Attributes.GetNamedItem("Key");
+													var valueAttr = enumItemNode.Attributes.GetNamedItem("Value");
+													if (keyAttr == null || valueAttr == null)
+													{
+														definition = null;
+														return false;
+													}
+													enumItem.Add(keyAttr.InnerText, valueAttr.InnerText);
+												}
+												else
+												{
+													definition = null;
+													return false;
+												}
+											}
+											isaDefinition.Enums.Add(EnumNameAttr.InnerText, enumItem);
+										}
+										else
+										{
+											definition = null;
+											return false;
+										}
+									}
+								}
 								break;
 							case "Definitions":
 								if (ParseDefinitions(item, ref isaDefinition) == false)

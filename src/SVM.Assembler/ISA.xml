@@ -1,5 +1,8 @@
 <ISARoot>
 	<Enums>
+		<Enum Name="Example">
+			<Item Key="A" Value="0"/>
+		</Enum>
 	</Enums>
 	<Definitions>
 		<InstructionDefinition PrimaryInstruction="BMath">
