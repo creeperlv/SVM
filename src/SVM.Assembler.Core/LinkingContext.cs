@@ -5,14 +5,16 @@ namespace SVM.Assembler.Core
 {
 	public class LinkingContext
 	{
+		public ISADefinition Definition;
 		public Dictionary<string, uint> DataOffsets = new Dictionary<string, uint>();
 		public ManagedSVMProgram Program;
 		public Dictionary<string, int> label = new Dictionary<string, int>();
 		public IntermediateObject IntermediateObject;
-		public LinkingContext(ManagedSVMProgram program, IntermediateObject intermediateObject)
+		public LinkingContext(ManagedSVMProgram program, IntermediateObject intermediateObject, ISADefinition definition)
 		{
 			Program = program;
 			IntermediateObject = intermediateObject;
+			Definition = definition;
 		}
 		public bool TryFindLabel(string label, out int offset)
 		{

@@ -1,4 +1,5 @@
 ﻿using LibCLCC.NET.Operations;
+using Microsoft.Win32.SafeHandles;
 using SVM.Core;
 using SVM.Core.Utils;
 using System;
@@ -37,51 +38,242 @@ namespace SVM.Assembler.Core
 			}
 			return operationResult;
 		}
-		public bool TryParseRegister(string input, IntermediateObject obj, LinkingContext context, out byte registerID)
+		public static bool TryParseRegister(string input, LinkingContext context, out byte registerID)
 		{
 			if (input.StartsWith("$"))
 			{
-
+				var regValue = input[1..];
+				if (context.Definition.RegisterNames.TryGetValue(regValue, out var regID))
+				{
+					registerID = regID;
+					return true;
+				}
+				else
+				{
+					return byte.TryParse(regValue, out registerID);
+				}
+			}
+			else
+			{
+				if (context.IntermediateObject.TryGetConst(input, out var realStr))
+				{
+					return TryParseRegister(realStr, context, out registerID);
+				}
 			}
 			registerID = byte.MaxValue;
 			return false;
 		}
-		public static OperationResult<SVMInstruction> translate(InstructionDefinition def, LinkingContext context, IntermediateInstruction iinstruction)
+		public unsafe static void WriteData(SVMInstruction* inst, SVMNativeTypes nativeType, int Pos, byte* dataStart)
+		{
+			var size = nativeType switch
+			{
+				SVMNativeTypes.Int8 => sizeof(sbyte),
+				SVMNativeTypes.Int16 => sizeof(short),
+				SVMNativeTypes.Int32 => sizeof(int),
+				SVMNativeTypes.Int64 => sizeof(long),
+				SVMNativeTypes.UInt8 => sizeof(byte),
+				SVMNativeTypes.UInt16 => sizeof(ushort),
+				SVMNativeTypes.UInt32 => sizeof(uint),
+				SVMNativeTypes.UInt64 => sizeof(ulong),
+				SVMNativeTypes.Float => sizeof(float),
+				SVMNativeTypes.Double => sizeof(double),
+				_ => 0,
+			};
+			Buffer.MemoryCopy(dataStart, inst + Pos * sizeof(byte), size, size);
+		}
+		public unsafe static bool ParseAndWriteData(SVMInstruction* inst, SVMNativeTypes nativeType, int Pos, string value)
+		{
+			switch (nativeType)
+			{
+				case SVMNativeTypes.Int8:
+					{
+						if (sbyte.TryParse(value, out sbyte v))
+						{
+							WriteData(inst, nativeType, Pos, (byte*)&v);
+							return true;
+						}
+					}
+					break;
+				case SVMNativeTypes.Int16:
+					{
+						if (short.TryParse(value, out short v))
+						{
+							WriteData(inst, nativeType, Pos, (byte*)&v);
+							return true;
+						}
+					}
+					break;
+				case SVMNativeTypes.Int32:
+					{
+						if (int.TryParse(value, out int v))
+						{
+							WriteData(inst, nativeType, Pos, (byte*)&v);
+							return true;
+						}
+					}
+					break;
+				case SVMNativeTypes.Int64:
+					{
+						if (long.TryParse(value, out long v))
+						{
+							WriteData(inst, nativeType, Pos, (byte*)&v);
+							return true;
+						}
+					}
+					break;
+				case SVMNativeTypes.UInt8:
+					{
+						if (byte.TryParse(value, out byte v))
+						{
+							WriteData(inst, nativeType, Pos, (byte*)&v);
+							return true;
+						}
+					}
+					break;
+				case SVMNativeTypes.UInt16:
+					{
+						if (ushort.TryParse(value, out ushort v))
+						{
+							WriteData(inst, nativeType, Pos, (byte*)&v);
+							return true;
+						}
+					}
+					break;
+				case SVMNativeTypes.UInt32:
+					{
+						if (uint.TryParse(value, out uint v))
+						{
+							WriteData(inst, nativeType, Pos, (byte*)&v);
+							return true;
+						}
+					}
+					break;
+				case SVMNativeTypes.UInt64:
+					{
+						if (ulong.TryParse(value, out ulong v))
+						{
+							WriteData(inst, nativeType, Pos, (byte*)&v);
+							return true;
+						}
+					}
+					break;
+				case SVMNativeTypes.Float:
+					{
+						if (float.TryParse(value, out float v))
+						{
+							WriteData(inst, nativeType, Pos, (byte*)&v);
+							return true;
+						}
+					}
+					break;
+				case SVMNativeTypes.Double:
+					{
+						if (double.TryParse(value, out double v))
+						{
+							WriteData(inst, nativeType, Pos, (byte*)&v);
+							return true;
+						}
+					}
+					break;
+				default:
+					break;
+			}
+			return false;
+		}
+		public unsafe static bool ProcessDefinedEnum(string enumName, string input, InstructionParameter parameter, LinkingContext context, SVMInstruction* inst)
+		{
+			if (context.Definition.Enums.TryGetValue(enumName, out var enumDef))
+			{
+				if (enumDef.TryGetValue(input, out var enumValue))
+				{
+					return ParseAndWriteData(inst, parameter.ExpectdValue.Type, parameter.ExpectdValue.Pos, enumValue);
+				}
+				if (context.IntermediateObject.TryGetConst(input, out var constValue))
+				{
+					return ProcessDefinedEnum(enumName, constValue, parameter, context, inst);
+				}
+			}
+			return false;
+		}
+		public unsafe static bool ProcessInternalEnum(string enumName, string input, InstructionParameter parameter, LinkingContext context, SVMInstruction* inst)
+		{
+			switch (enumName)
+			{
+				case "NativeType":
+					{
+						if (Enum.TryParse<SVMNativeTypes>(input, out var enumV))
+						{
+							WriteData(inst, parameter.ExpectdValue.Type, parameter.ExpectdValue.Pos, (byte*)&enumV);
+							return true;
+						}
+					}
+					break;
+				case "bOp":
+					{
+						if (Enum.TryParse<BMathOp>(input, out var enumV))
+						{
+							WriteData(inst, parameter.ExpectdValue.Type, parameter.ExpectdValue.Pos, (byte*)&enumV);
+							return true;
+						}
+					}
+					break;
+				default:
+					break;
+			}
+			if (context.IntermediateObject.TryGetConst(input, out var value))
+			{
+				return ProcessInternalEnum(enumName, value, parameter, context, inst);
+			}
+			return false;
+		}
+		public unsafe static OperationResult<SVMInstruction> translate(InstructionDefinition def, LinkingContext context, IntermediateInstruction iinstruction)
 		{
 			OperationResult<SVMInstruction> result = new OperationResult<SVMInstruction>();
+			SVMInstruction instruction = new SVMInstruction();
 			for (int i = 0; i < iinstruction.Parameters.Count; i++)
 			{
 				var para = iinstruction.Parameters[i];
 				var paraDef = def.ParameterPattern[i];
 				string converter = paraDef.ExpectdValue.Converter;
+				if (para.Content == null)
+				{
+					return result;
+				}
 				if (converter.StartsWith("InternalEnum:"))
 				{
 					var enumName = converter["InternalEnum:".Length..];
-					switch (enumName)
-					{
-						default:
-							break;
-					}
+					ProcessInternalEnum(enumName, para.Content, paraDef, context, &instruction);
+				}
+				else
+				if (converter.StartsWith("Enum:"))
+				{
+					var enumName = converter["Enum:".Length..];
+					ProcessInternalEnum(enumName, para.Content, paraDef, context, &instruction);
 				}
 				else
 				{
 					switch (converter)
 					{
 						case "Register":
-
+							if (!TryParseRegister(para.Content, context, out var registerID))
+							{
+								return result;
+							}
+							WriteData(&instruction, paraDef.ExpectdValue.Type, paraDef.ExpectdValue.Pos, &registerID);
 							break;
 						default:
 							break;
 					}
 				}
 			}
+			result.Result = instruction;
 			return result;
 		}
 		public unsafe static OperationResult<ManagedSVMProgram?> Finialize(ISADefinition definition, IntermediateObject Obj)
 		{
 			OperationResult<ManagedSVMProgram?> operationResult = new OperationResult<ManagedSVMProgram?>(null);
 			ManagedSVMProgram program = new ManagedSVMProgram();
-			LinkingContext context = new LinkingContext(program, Obj);
+			LinkingContext context = new LinkingContext(program, Obj, definition);
 			List<byte[]> Data = new List<byte[]>();
 			uint offset = 0;
 			foreach (var item in Obj.data)
