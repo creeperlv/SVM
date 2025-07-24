@@ -239,6 +239,24 @@ LabelConstant InternalLbl
 		public Dictionary<string, string> data = new Dictionary<string, string>();
 		public Dictionary<string, string> consts = new Dictionary<string, string>();
 		public List<IntermediateInstruction> instructions = new List<IntermediateInstruction>();
+		public bool TryGetConst(string str, out string value)
+		{
+			return consts.TryGetValue(str, out value);
+		}
+		public bool TryGetLabelPC(string label, out int PC)
+		{
+			for (int i = 0; i < instructions.Count; i++)
+			{
+				IntermediateInstruction? item = instructions[i];
+				if (item.Label != null && item.Label.Content == label)
+				{
+					PC = i;
+					return true;
+				}
+			}
+			PC = -1;
+			return false;
+		}
 	}
 	[Serializable]
 	public class IntermediateInstruction

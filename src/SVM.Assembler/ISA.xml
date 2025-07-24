@@ -4,6 +4,10 @@
 			<Item Key="A" Value="0"/>
 		</Enum>
 	</Enums>
+	<Registers>
+		<Item Key="pc" Value="1"/>
+		<Item Key="sp" Value="2"/>
+	</Registers>
 	<Definitions>
 		<InstructionDefinition PrimaryInstruction="BMath">
 			<Aliases>

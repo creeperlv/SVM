@@ -37,10 +37,44 @@ namespace SVM.Assembler.Core
 			}
 			return operationResult;
 		}
+		public bool TryParseRegister(string input, IntermediateObject obj, LinkingContext context, out byte registerID)
+		{
+			if (input.StartsWith("$"))
+			{
+
+			}
+			registerID = byte.MaxValue;
+			return false;
+		}
 		public static OperationResult<SVMInstruction> translate(InstructionDefinition def, LinkingContext context, IntermediateInstruction iinstruction)
 		{
 			OperationResult<SVMInstruction> result = new OperationResult<SVMInstruction>();
+			for (int i = 0; i < iinstruction.Parameters.Count; i++)
+			{
+				var para = iinstruction.Parameters[i];
+				var paraDef = def.ParameterPattern[i];
+				string converter = paraDef.ExpectdValue.Converter;
+				if (converter.StartsWith("InternalEnum:"))
+				{
+					var enumName = converter["InternalEnum:".Length..];
+					switch (enumName)
+					{
+						default:
+							break;
+					}
+				}
+				else
+				{
+					switch (converter)
+					{
+						case "Register":
 
+							break;
+						default:
+							break;
+					}
+				}
+			}
 			return result;
 		}
 		public unsafe static OperationResult<ManagedSVMProgram?> Finialize(ISADefinition definition, IntermediateObject Obj)

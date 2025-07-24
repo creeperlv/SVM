@@ -12,6 +12,7 @@ namespace SVM.Assembler.Core
 	[Serializable]
 	public class ISADefinition
 	{
+		public Dictionary<string, byte> RegisterNames = new Dictionary<string, byte>();
 		public Dictionary<string, Dictionary<string, string>> Enums = new Dictionary<string, Dictionary<string, string>>();
 		public Dictionary<PrimaryInstruction, InstructionDefinition> InstructionDefinitions = new Dictionary<PrimaryInstruction, InstructionDefinition>();
 		[NonSerialized]
@@ -237,6 +238,36 @@ namespace SVM.Assembler.Core
 											definition = null;
 											return false;
 										}
+									}
+								}
+								break;
+							case "Registers":
+								{
+									foreach (XmlNode enumNode in item.ChildNodes)
+									{
+										if (enumNode.Name == "Item")
+										{
+
+											var keyAttr = enumNode.Attributes.GetNamedItem("Key");
+											var valueAttr = enumNode.Attributes.GetNamedItem("Value");
+											if (keyAttr == null || valueAttr == null)
+											{
+												definition = null;
+												return false;
+											}
+											if (!byte.TryParse(valueAttr.InnerText, out var RegID))
+											{
+												definition = null;
+												return false;
+											}
+											isaDefinition.RegisterNames.Add(keyAttr.InnerText, RegID);
+										}
+										else
+										{
+											definition = null;
+											return false;
+										}
+
 									}
 								}
 								break;
