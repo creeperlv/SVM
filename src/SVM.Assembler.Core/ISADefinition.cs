@@ -1,6 +1,7 @@
 ﻿using SVM.Core;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Xml;
@@ -34,17 +35,17 @@ namespace SVM.Assembler.Core
 		{
 			for (int i = 0; i < depth; i++)
 			{
-				Console.Write("\t");
+				Trace.Write("\t");
 			}
 		}
 		static void ShowNode(XmlNode node, int depth = 0)
 		{
 			PrintDepth(depth);
-			Console.WriteLine($"[+]{node.NodeType}:{node.Name}");
+			Trace.WriteLine($"[+]{node.NodeType}:{node.Name}");
 			foreach (XmlAttribute item in node.Attributes)
 			{
 				PrintDepth(depth + 1);
-				Console.WriteLine($"[i]{item.NodeType}:{item.Name}={item.InnerText}");
+				Trace.WriteLine($"[i]{item.NodeType}:{item.Name}={item.InnerText}");
 
 			}
 			foreach (XmlElement item in node.ChildNodes)
@@ -56,13 +57,13 @@ namespace SVM.Assembler.Core
 				else
 				{
 					PrintDepth(depth + 1);
-					Console.Write($"[?]{item.NodeType}:{item.Name}");
+					Trace.Write($"[?]{item.NodeType}:{item.Name}");
 				}
 			}
 		}
 		static bool ParseParameter(XmlNode node, ref InstructionDefinition instruction)
 		{
-			Console.WriteLine("Parse:Parameter");
+			Trace.WriteLine("Parse:Parameter");
 			InstructionParameter parameter = new InstructionParameter();
 			foreach (XmlNode subNode in node)
 			{
@@ -75,7 +76,7 @@ namespace SVM.Assembler.Core
 							{
 								var result = item.Attributes.GetNamedItem("Id");
 								if (result == null) return false;
-								Console.WriteLine($"Item:{result.InnerText}");
+								Trace.WriteLine($"Item:{result.InnerText}");
 								parameter.AllowedTokenIds.Add(result.InnerText);
 							}
 						}
@@ -90,12 +91,12 @@ namespace SVM.Assembler.Core
 							if (ConverterAttr == null) return false;
 							if (!Enum.TryParse<SVMNativeTypes>(TypeAttr.InnerText, out var nType))
 							{
-								Console.WriteLine($"ParseSVMNativeTypes:{TypeAttr.InnerText}");
+								Trace.WriteLine($"ParseSVMNativeTypes:{TypeAttr.InnerText}");
 								return false;
 							}
 							if (!int.TryParse(PosAttr.InnerText, out var pos))
 							{
-								Console.WriteLine($"ParseInt:{PosAttr.InnerText}");
+								Trace.WriteLine($"ParseInt:{PosAttr.InnerText}");
 								return false;
 							}
 							parameter.ExpectdValue.Type = nType;
@@ -111,7 +112,7 @@ namespace SVM.Assembler.Core
 		}
 		static bool ParseDefinition(XmlNode node, ref ISADefinition definition)
 		{
-			Console.WriteLine($"ParseDefinition:{node.Name}");
+			Trace.WriteLine($"ParseDefinition:{node.Name}");
 			InstructionDefinition instDefinition = new InstructionDefinition();
 			var PIAttr = node.Attributes.GetNamedItem("PrimaryInstruction");
 			if (PIAttr == null) return false;
@@ -122,13 +123,13 @@ namespace SVM.Assembler.Core
 			instDefinition.PrimaryInstruction = pi;
 			foreach (XmlNode item in node.ChildNodes)
 			{
-				Console.WriteLine($"{item.Name}");
+				Trace.WriteLine($"{item.Name}");
 				switch (item.Name)
 				{
 					case "Aliases":
 						foreach (XmlNode aliasNode in item.ChildNodes)
 						{
-							Console.WriteLine($"Aliases->{aliasNode.Name}");
+							Trace.WriteLine($"Aliases->{aliasNode.Name}");
 							if (aliasNode.Name == "Alias")
 							{
 								instDefinition.Aliases.Add(aliasNode.Attributes["Name"].Value);
@@ -142,7 +143,7 @@ namespace SVM.Assembler.Core
 					case "Parameters":
 						foreach (XmlNode parameterNode in item.ChildNodes)
 						{
-							Console.WriteLine($"Parameters->{parameterNode.Name}");
+							Trace.WriteLine($"Parameters->{parameterNode.Name}");
 							if (parameterNode.Name == "InstructionParameter")
 							{
 								if (!ParseParameter(parameterNode, ref instDefinition))
@@ -157,7 +158,7 @@ namespace SVM.Assembler.Core
 						}
 						break;
 					default:
-						Console.WriteLine($"???{item.Name}");
+						Trace.WriteLine($"???{item.Name}");
 						break;
 				}
 			}
@@ -166,12 +167,12 @@ namespace SVM.Assembler.Core
 		}
 		static bool ParseDefinitions(XmlNode node, ref ISADefinition definition)
 		{
-			Console.WriteLine("Parse:Definitions");
+			Trace.WriteLine("Parse:Definitions");
 			foreach (XmlNode item in node.ChildNodes)
 			{
 				if (item.Name != "InstructionDefinition")
 				{
-					Console.WriteLine($"Not Matching:{item.Name}");
+					Trace.WriteLine($"Not Matching:{item.Name}");
 
 					return false;
 				}
@@ -279,7 +280,7 @@ namespace SVM.Assembler.Core
 								}
 								break;
 							default:
-								Console.WriteLine("Unknown Node!");
+								Trace.WriteLine("Unknown Node!");
 								break;
 						}
 					}

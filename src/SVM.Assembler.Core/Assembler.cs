@@ -65,7 +65,7 @@ LabelConstant InternalLbl
 
 			ISA = isaDefinition;
 		}
-		public OperationResult<LexSegment?> Lex(ILexer lexer)
+		private OperationResult<LexSegment?> Lex(ILexer lexer)
 		{
 			while (true)
 			{
@@ -78,7 +78,7 @@ LabelConstant InternalLbl
 				}
 			}
 		}
-		public OperationResult<(string, string)?> ParseKVPair(ILexer lexer, LexSegment currentSeg)
+		private OperationResult<(string, string)?> ParseKVPair(ILexer lexer, LexSegment currentSeg)
 		{
 			OperationResult<(string, string)?> operationResult = new OperationResult<(string, string)?>(null);
 			var r = Lex(lexer);

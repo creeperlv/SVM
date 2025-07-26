@@ -9,6 +9,17 @@ namespace SVM.Core
 	{
 		public List<SVMInstruction> instructions = new List<SVMInstruction>();
 		public byte[]? Datas;
+		public void WriteToStream(Stream stream)
+		{
+			stream.WriteData(Datas?.Length ?? 0);
+			stream.WriteData(instructions.Count);
+			if (Datas != null)
+				stream.Write(Datas);
+			foreach (SVMInstruction instruction in instructions)
+			{
+				stream.WriteData(instruction);
+			}
+		}
 	}
 	public unsafe struct SVMProgram : IDisposable
 	{

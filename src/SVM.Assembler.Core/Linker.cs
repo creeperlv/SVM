@@ -36,6 +36,7 @@ namespace SVM.Assembler.Core
 					}
 				}
 			}
+			operationResult.Result = intermediateObject;
 			return operationResult;
 		}
 		public static bool TryParseRegister(string input, LinkingContext context, out byte registerID)
@@ -290,6 +291,7 @@ namespace SVM.Assembler.Core
 				offset += (uint)data2.Length;
 				Data.Add(data);
 			}
+			Console.WriteLine($"Instruction Count:{Obj.instructions.Count}");
 			foreach (var item in Obj.instructions)
 			{
 				if (definition.InstructionDefinitions.TryGetValue(item.inst, out var def))
@@ -310,6 +312,7 @@ namespace SVM.Assembler.Core
 				Buffer.BlockCopy(item, 0, program.Datas, offset2, item.Length);
 				offset2 += item.Length;
 			}
+			operationResult.Result = program;
 			return operationResult;
 		}
 	}
