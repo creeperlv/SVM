@@ -80,7 +80,7 @@ namespace SVM.Assembler.Core
 				SVMNativeTypes.Double => sizeof(double),
 				_ => 0,
 			};
-			Buffer.MemoryCopy(dataStart, inst + Pos * sizeof(byte), size, size);
+			Buffer.MemoryCopy(dataStart, ((byte*)inst) + Pos * sizeof(byte), size, size);
 		}
 		public unsafe static bool ParseAndWriteData(SVMInstruction* inst, SVMNativeTypes nativeType, int Pos, string value)
 		{
@@ -291,7 +291,6 @@ namespace SVM.Assembler.Core
 				offset += (uint)data2.Length;
 				Data.Add(data);
 			}
-			Console.WriteLine($"Instruction Count:{Obj.instructions.Count}");
 			foreach (var item in Obj.instructions)
 			{
 				if (definition.InstructionDefinitions.TryGetValue(item.inst, out var def))

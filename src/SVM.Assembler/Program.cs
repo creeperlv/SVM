@@ -40,11 +40,6 @@ namespace SVM.Assembler
 						break;
 				}
 			}
-
-			foreach (var item in files)
-			{
-				Console.WriteLine(item);
-			}
 			Assembler.Core.Assembler assembler = new Core.Assembler(def);
 			foreach (var item in files)
 			{

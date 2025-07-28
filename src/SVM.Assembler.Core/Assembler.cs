@@ -13,7 +13,7 @@ namespace SVM.Assembler.Core
 @"
 Match:
 
-D [0-9]
+D \d
 Number {D}+
 InstMath bmath
 InstCvt cvt
@@ -24,18 +24,14 @@ Register \${D}+
 LabelCode \.code\:
 LabelData \.data\:
 LabelConst \.const\:
-word \w*
+word [\w\d]+
 GenericLabel {word}\:
 LineEnd \n
-string "".*""
+string ""\"".*\""""
 
-OpAdd add
-OpSub sub
-OpMul mul
-OpDiv div
 
 Id:
-
+word Word
 InstMath inst
 InstCvt inst
 InstSystem inst
@@ -64,7 +60,6 @@ LabelConstant InternalLbl
 			}
 			else
 			{
-				Console.WriteLine("Lexer Definition load failed.");
 			}
 
 			ISA = isaDefinition;
@@ -76,10 +71,13 @@ LabelConstant InternalLbl
 				var r = lexer.Lex();
 				if (r.HasError()) return r;
 				if (r.Result == null) return r;
+
 				if (r.Result.LexSegmentId != null && r.Result.LexMatchedItemId != null)
 				{
+					if (r.Result.LexSegmentId == "LE") continue;
 					return r;
 				}
+
 			}
 		}
 		private OperationResult<(string, string)?> ParseKVPair(ILexer lexer, LexSegment currentSeg)
@@ -121,11 +119,9 @@ LabelConstant InternalLbl
 			}
 			if (!ISA.InstructionDefinitionAliases.TryGetValue(LexDef.Content ?? "", out var instructionDef))
 			{
-				Console.WriteLine($"Cannot find matching instruction:{LexDef.Content}");
 				operationResult.AddError(new Error());
 				return operationResult;
 			}
-			Console.WriteLine($"Found:{instructionDef.PrimaryInstruction}");
 			intermediateInstruction.inst = instructionDef.PrimaryInstruction;
 			foreach (var item in instructionDef.ParameterPattern)
 			{
@@ -148,14 +144,12 @@ LabelConstant InternalLbl
 				}
 				intermediateInstruction.Parameters.Add(next.Result);
 			}
-			Console.WriteLine($"Parsed:{intermediateInstruction.inst}");
 			return intermediateInstruction;
 		}
 		public OperationResult<IntermediateObject> AssembleIntermediateObject(string input, string ID = "main.asm")
 		{
 			StringLexer lexer = new StringLexer();
 			lexer.SetDefinition(definition);
-			Console.WriteLine(input);
 			lexer.Content = input;
 			lexer.SourceID = ID;
 			OperationResult<IntermediateObject> operationResult = new OperationResult<IntermediateObject>(new IntermediateObject());
@@ -163,7 +157,6 @@ LabelConstant InternalLbl
 			while (true)
 			{
 				var lexResult = Lex(lexer);
-				Console.WriteLine($"{lexResult.Result?.Content ?? "<null>"}");
 				if (lexResult.Result == null) break;
 				var r = lexResult.Result;
 				switch (r.LexSegmentId)
@@ -189,7 +182,6 @@ LabelConstant InternalLbl
 						{
 							case InternalLabel.Code:
 								{
-									Console.WriteLine($"Code Seg:{r.Content}");
 									OperationResult<IntermediateInstruction?> instR = r.LexSegmentId switch
 									{
 										"LblG" => ParseInstruction(lexer, r, r),

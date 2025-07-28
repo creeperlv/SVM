@@ -108,6 +108,7 @@ namespace SVM.Assembler.Core
 						return false;
 				}
 			}
+			instruction.ParameterPattern.Add(parameter);
 			return true;
 		}
 		static bool ParseDefinition(XmlNode node, ref ISADefinition definition)
@@ -120,7 +121,6 @@ namespace SVM.Assembler.Core
 			{
 				return false;
 			}
-			Console.WriteLine($"Definition of: {pi}");
 			instDefinition.PrimaryInstruction = pi;
 			foreach (XmlNode item in node.ChildNodes)
 			{
