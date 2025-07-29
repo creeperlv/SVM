@@ -40,12 +40,20 @@ namespace SVM.Assembler
 						break;
 				}
 			}
+			if (files.Count == 0)
+			{
+				return;
+			}
 			Assembler.Core.Assembler assembler = new Core.Assembler(def);
 			foreach (var item in files)
 			{
 				var result = assembler.AssembleIntermediateObject(File.ReadAllText(item), item);
 				if (result.HasError())
 				{
+					foreach (var error in result.Errors)
+					{
+						Console.Error.WriteLine(error.ToString());
+					}
 					Console.Error.WriteLine($"Error at assembling {item}. Abort.");
 					return;
 				}

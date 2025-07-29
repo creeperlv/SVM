@@ -60,8 +60,16 @@
 				<InstructionParameter>
 					<MatchingItems>
 						<Item Id="Word"/>
+						<Item Id="Register"/>
 					</MatchingItems>
-					<ExpectedValue Type="Int32" Pos="8" Converter="Ingeter32" />
+					<ExpectedValue Type="UInt8" Pos="1" Converter="Register" />
+				</InstructionParameter>
+				<InstructionParameter>
+					<MatchingItems>
+						<Item Id="Number"/>
+						<Item Id="Word"/>
+					</MatchingItems>
+					<ExpectedValue Type="Int32" Pos="8" Converter="Integer32" />
 				</InstructionParameter>
 			</Parameters>
 		</InstructionDefinition>

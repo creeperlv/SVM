@@ -1,5 +1,6 @@
 ﻿using LibCLCC.NET.Lexer;
 using LibCLCC.NET.Operations;
+using SVM.Assembler.Core.Errors;
 using SVM.Core;
 using System;
 using System.Collections.Generic;
@@ -13,9 +14,9 @@ namespace SVM.Assembler.Core
 @"
 Match:
 
-D \d
-Number {D}+
 InstMath bmath
+InstSDInt32 sd\.int32
+InstSDInt sd\.int
 InstCvt cvt
 InstSystem system
 InstSys sys
@@ -24,15 +25,19 @@ Register \${D}+
 LabelCode \.code\:
 LabelData \.data\:
 LabelConst \.const\:
-word [\w\d]+
+word [\w\d\.]+
 GenericLabel {word}\:
 LineEnd \n
 string ""\"".*\""""
+Number \d+
+D \d
 
 
 Id:
 word Word
 InstMath inst
+InstSDInt inst
+InstSDInt32 inst
 InstCvt inst
 InstSystem inst
 InstSys inst
@@ -75,6 +80,7 @@ LabelConstant InternalLbl
 				if (r.Result.LexSegmentId != null && r.Result.LexMatchedItemId != null)
 				{
 					if (r.Result.LexSegmentId == "LE") continue;
+					
 					return r;
 				}
 
@@ -119,7 +125,7 @@ LabelConstant InternalLbl
 			}
 			if (!ISA.InstructionDefinitionAliases.TryGetValue(LexDef.Content ?? "", out var instructionDef))
 			{
-				operationResult.AddError(new Error());
+				operationResult.AddError(new ErrorWMsg($"Unknown Instruction:{LexDef.Content ?? "<null>"}", LexDef));
 				return operationResult;
 			}
 			intermediateInstruction.inst = instructionDef.PrimaryInstruction;
@@ -140,6 +146,7 @@ LabelConstant InternalLbl
 				}
 				if (!item.AllowedTokenIds.Contains(next.Result.LexSegmentId))
 				{
+					operationResult.AddError(new ErrorWMsg($"Token: {LexDef.Content ?? "<null>"} is not allowed here.", LexDef));
 					return operationResult;
 				}
 				intermediateInstruction.Parameters.Add(next.Result);

@@ -1,9 +1,11 @@
 ﻿using LibCLCC.NET.Operations;
 using Microsoft.Win32.SafeHandles;
+using SVM.Assembler.Core.Errors;
 using SVM.Core;
 using SVM.Core.Utils;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Reflection.Emit;
 using System.Text;
 
@@ -262,6 +264,7 @@ namespace SVM.Assembler.Core
 		public unsafe static OperationResult<bool> translate(InstructionDefinition def, LinkingContext context, IntermediateInstruction iinstruction, SVMInstruction* instruction)
 		{
 			OperationResult<bool> result = new OperationResult<bool>(false);
+			((IntPtr)instruction).SetData((byte)def.PrimaryInstruction);
 			//SVMInstruction instruction = new SVMInstruction();
 			for (int i = 0; i < iinstruction.Parameters.Count; i++)
 			{
@@ -270,6 +273,7 @@ namespace SVM.Assembler.Core
 				string converter = paraDef.ExpectdValue.Converter;
 				if (para.Content == null)
 				{
+					result.AddError(new ErrorWMsg($"{para.Content} (Parameter {i}) have no content!", para));
 					return result;
 				}
 				if (converter.StartsWith("InternalEnum:"))
@@ -291,6 +295,7 @@ namespace SVM.Assembler.Core
 							{
 								if (!TryParseRegister(para.Content, context, out var registerID))
 								{
+									result.AddError(new ErrorWMsg($"{para.Content} cannot be parsed to Register!", para));
 									return result;
 								}
 								WriteData(instruction, paraDef.ExpectdValue.Type, paraDef.ExpectdValue.Pos, &registerID);
@@ -300,6 +305,7 @@ namespace SVM.Assembler.Core
 							{
 								if (!TryParseInt32(para.Content, context, out var registerID))
 								{
+									result.AddError(new ErrorWMsg($"{para.Content} cannot be parsed to Integer32!", para));
 									return result;
 								}
 								WriteData(instruction, paraDef.ExpectdValue.Type, paraDef.ExpectdValue.Pos, (byte*)&registerID);
