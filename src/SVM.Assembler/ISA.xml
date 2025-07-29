@@ -51,5 +51,19 @@
 				</InstructionParameter>
 			</Parameters>
 		</InstructionDefinition>
+		<InstructionDefinition PrimaryInstruction="SD" InstructionCount="2">
+			<Aliases>
+				<Alias Name="sd.int"/>
+				<Alias Name="sd.int32"/>
+			</Aliases>
+			<Parameters>
+				<InstructionParameter>
+					<MatchingItems>
+						<Item Id="Word"/>
+					</MatchingItems>
+					<ExpectedValue Type="Int32" Pos="8" Converter="Ingeter32" />
+				</InstructionParameter>
+			</Parameters>
+		</InstructionDefinition>
 	</Definitions>
 </ISARoot>

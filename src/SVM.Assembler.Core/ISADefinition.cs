@@ -116,7 +116,15 @@ namespace SVM.Assembler.Core
 			Trace.WriteLine($"ParseDefinition:{node.Name}");
 			InstructionDefinition instDefinition = new InstructionDefinition();
 			var PIAttr = node.Attributes.GetNamedItem("PrimaryInstruction");
+			var ICAttr = node.Attributes.GetNamedItem("InstructionCount");
 			if (PIAttr == null) return false;
+			if (ICAttr != null)
+			{
+				if (int.TryParse(ICAttr.InnerText, out var ic))
+				{
+					instDefinition.InstructionCount = ic;
+				}
+			}
 			if (!Enum.TryParse<PrimaryInstruction>(PIAttr.InnerText, out var pi))
 			{
 				return false;

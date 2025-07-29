@@ -64,6 +64,38 @@ namespace SVM.Assembler.Core
 			registerID = byte.MaxValue;
 			return false;
 		}
+		public static bool TryParseInt32(string input, LinkingContext context, out int value)
+		{
+			if (int.TryParse(input, out value))
+			{
+				return true;
+			}
+			else
+			{
+				if (context.IntermediateObject.TryGetConst(input, out var realStr))
+				{
+					return TryParseInt32(realStr, context, out value);
+				}
+			}
+			value = byte.MaxValue;
+			return false;
+		}
+		public static bool TryParseInt64(string input, LinkingContext context, out long value)
+		{
+			if (long.TryParse(input, out value))
+			{
+				return true;
+			}
+			else
+			{
+				if (context.IntermediateObject.TryGetConst(input, out var realStr))
+				{
+					return TryParseInt64(realStr, context, out value);
+				}
+			}
+			value = byte.MaxValue;
+			return false;
+		}
 		public unsafe static void WriteData(SVMInstruction* inst, SVMNativeTypes nativeType, int Pos, byte* dataStart)
 		{
 			var size = nativeType switch
@@ -227,10 +259,10 @@ namespace SVM.Assembler.Core
 			}
 			return false;
 		}
-		public unsafe static OperationResult<SVMInstruction> translate(InstructionDefinition def, LinkingContext context, IntermediateInstruction iinstruction)
+		public unsafe static OperationResult<bool> translate(InstructionDefinition def, LinkingContext context, IntermediateInstruction iinstruction, SVMInstruction* instruction)
 		{
-			OperationResult<SVMInstruction> result = new OperationResult<SVMInstruction>();
-			SVMInstruction instruction = new SVMInstruction();
+			OperationResult<bool> result = new OperationResult<bool>(false);
+			//SVMInstruction instruction = new SVMInstruction();
 			for (int i = 0; i < iinstruction.Parameters.Count; i++)
 			{
 				var para = iinstruction.Parameters[i];
@@ -243,31 +275,42 @@ namespace SVM.Assembler.Core
 				if (converter.StartsWith("InternalEnum:"))
 				{
 					var enumName = converter["InternalEnum:".Length..];
-					ProcessInternalEnum(enumName, para.Content, paraDef, context, &instruction);
+					ProcessInternalEnum(enumName, para.Content, paraDef, context, instruction);
 				}
 				else
 				if (converter.StartsWith("Enum:"))
 				{
 					var enumName = converter["Enum:".Length..];
-					ProcessInternalEnum(enumName, para.Content, paraDef, context, &instruction);
+					ProcessInternalEnum(enumName, para.Content, paraDef, context, instruction);
 				}
 				else
 				{
 					switch (converter)
 					{
 						case "Register":
-							if (!TryParseRegister(para.Content, context, out var registerID))
 							{
-								return result;
+								if (!TryParseRegister(para.Content, context, out var registerID))
+								{
+									return result;
+								}
+								WriteData(instruction, paraDef.ExpectdValue.Type, paraDef.ExpectdValue.Pos, &registerID);
 							}
-							WriteData(&instruction, paraDef.ExpectdValue.Type, paraDef.ExpectdValue.Pos, &registerID);
+							break;
+						case "Integer32":
+							{
+								if (!TryParseInt32(para.Content, context, out var registerID))
+								{
+									return result;
+								}
+								WriteData(instruction, paraDef.ExpectdValue.Type, paraDef.ExpectdValue.Pos, (byte*)&registerID);
+							}
 							break;
 						default:
 							break;
 					}
 				}
 			}
-			result.Result = instruction;
+			result.Result = true;
 			return result;
 		}
 		public unsafe static OperationResult<ManagedSVMProgram?> Finialize(ISADefinition definition, IntermediateObject Obj)
@@ -296,12 +339,21 @@ namespace SVM.Assembler.Core
 				if (definition.InstructionDefinitions.TryGetValue(item.inst, out var def))
 				{
 
-					var inst = translate(def, context, item);
+					var instruction = stackalloc SVMInstruction[def.InstructionCount];
+					var inst = translate(def, context, item, instruction);
 					if (operationResult.CheckAndInheritErrorAndWarnings(inst))
 					{
 						return operationResult;
 					}
-					program.instructions.Add(inst.Result);
+					if (inst.Result)
+					{
+						for (int i = 0; i < def.InstructionCount; i++)
+						{
+
+							program.instructions.Add(instruction[i]);
+						}
+
+					}
 				}
 			}
 			program.Datas = new byte[offset];
