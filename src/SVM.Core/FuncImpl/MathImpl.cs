@@ -1,4 +1,5 @@
 ﻿using SVM.Core.Data;
+using System;
 using System.Runtime.CompilerServices;
 
 namespace SVM.Core.FuncImpl
@@ -216,6 +217,7 @@ namespace SVM.Core.FuncImpl
 			{
 				TN = LN.Add(RN);
 			}
+			Console.WriteLine($"SVM:Add:{typeof(N)}{LN}+{RN}={TN.ToString()}");
 			Register.SetData(T, TN);
 		}
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]

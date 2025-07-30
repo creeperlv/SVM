@@ -208,6 +208,10 @@ namespace SVM.Core.Data
 		{
 			return new CompactSingle(Value % R.Value);
 		}
+		public override string ToString()
+		{
+			return this.Value.ToString();
+		}
 	}
 
 }

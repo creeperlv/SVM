@@ -50,6 +50,22 @@ namespace SVM.Core
 				registers.SetData<SVMPointer>((int)SPOffset, new SVMPointer() { index = 1, offset = 0 });
 			}
 		}
+		public bool isReachBinaryEnd()
+		{
+			uint SPOffset = 2;
+			uint PCOffset = 1;
+			uint ErrorIDOffset = 3;
+			if (Config != null)
+			{
+				SPOffset = Config.SPRegisterID;
+				PCOffset = Config.PCRegisterID;
+				ErrorIDOffset = Config.EIDRegisterID;
+			}
+			var PC = registers.GetData<ulong>((int)PCOffset);
+			Console.WriteLine($"{PC},{Program->InstructionCount}");
+			return PC >= Program->InstructionCount;
+		}
+
 		public void Step()
 		{
 			uint SPOffset = 2;
@@ -67,6 +83,7 @@ namespace SVM.Core
 			var currentInstPtr = GetPointer(PC);
 			var Instruction = currentInstPtr.GetData<SVMInstruction>();
 			var def = Instruction.GetDef();
+			Console.WriteLine(def);
 			fixed (MState* statePtr = &MachineState)
 			{
 
@@ -144,8 +161,9 @@ namespace SVM.Core
 							var Reg = Instruction.GetData<byte>(1);
 							PC++;
 							var dataPtr = GetPointer(PC);
-							var data = currentInstPtr.GetData<ulong>();
-							registers.SetData(Reg, data);
+							var data = dataPtr.GetData<int>();
+							registers.SetDataInRegister(Reg, data);
+							Console.WriteLine($"SVM:SD:{data} form PC={PC}");
 						}
 						break;
 					case PrimaryInstruction.JAL:
@@ -178,6 +196,7 @@ namespace SVM.Core
 			}
 			PC++;
 			registers.SetData<ulong>((int)PCOffset, PC);
+			PC = registers.GetData<ulong>((int)PCOffset);
 		}
 
 		private void Convert(SVMInstruction Instruction)
@@ -261,7 +280,7 @@ namespace SVM.Core
 
 		public IntPtr GetPointer(ulong PC)
 		{
-			return GetPointer(new SVMPointer() { offset = (uint)PC, index = 0 });
+			return GetPointer(new SVMPointer() { offset = (uint)(PC * (uint)sizeof(SVMInstruction)), index = 0 });
 		}
 		public IntPtr GetPointer(SVMPointer absoluteAddress)
 		{
@@ -277,7 +296,7 @@ namespace SVM.Core
 					if (absoluteAddress.offset < offset0)
 					{
 
-						return IntPtr.Add((IntPtr)Program->instructions, (int)absoluteAddress.offset);
+						return (IntPtr)(Program->instructions + absoluteAddress.offset / sizeof(SVMInstruction));
 					}
 					else if (absoluteAddress.offset < offset1)
 					{

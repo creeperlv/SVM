@@ -37,12 +37,18 @@ namespace SVM.Core
 			{
 				return null;
 			}
-			var dataPtr = malloc(dataSectionLength);
-			Span<byte> dataBuffer = new Span<byte>((byte*)dataPtr, (int)dataSectionLength);
-			if (stream.Read(dataBuffer) != dataSectionLength)
+			Console.WriteLine(dataSectionLength);
+			Console.WriteLine(codeCount);
+			IntPtr dataPtr = malloc(dataSectionLength);
+			if (dataSectionLength != 0)
 			{
-				free(dataPtr);
-				return null;
+
+				Span<byte> dataBuffer = new Span<byte>((byte*)dataPtr, (int)dataSectionLength);
+				if (stream.Read(dataBuffer) != dataSectionLength)
+				{
+					free(dataPtr);
+					return null;
+				}
 			}
 			var codeLen = codeCount * sizeof(SVMInstruction);
 			var codePtr = malloc((uint)codeLen);
@@ -54,7 +60,7 @@ namespace SVM.Core
 				return null;
 			}
 			var program = (SVMProgram*)malloc(sizeof(SVMProgram));
-			program->data = (byte*)dataPtr;
+			program->data = dataSectionLength == 0 ? null : (byte*)dataPtr;
 			program->DataSize = dataSectionLength;
 			program->instructions = (SVMInstruction*)codePtr;
 			program->InstructionCount = codeCount;

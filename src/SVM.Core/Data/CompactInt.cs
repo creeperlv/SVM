@@ -211,6 +211,10 @@ namespace SVM.Core.Data
 		{
 			return new CompactInt(Value % R.Value);
 		}
+		public override string ToString()
+		{
+			return this.Value.ToString();
+		}
 	}
 
 }

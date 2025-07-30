@@ -1,4 +1,5 @@
-﻿using System;
+﻿using SVM.Core.Utils;
+using System;
 using System.Collections.Generic;
 using System.Runtime.InteropServices;
 using System.Text;
@@ -17,6 +18,24 @@ namespace SVM.Core.stdc
 		public static IntPtr malloc(int size)
 		{
 			return Marshal.AllocHGlobal(size);
+		}
+		public static IntPtr calloc(int size)
+		{
+			var ptr = Marshal.AllocHGlobal(size);
+			for (int i = 0; i < size; i++)
+			{
+				System.Runtime.InteropServices.Marshal.WriteByte(ptr, i, 0);
+			}
+			return ptr;
+		}
+		public static IntPtr calloc(uint size)
+		{
+			var ptr = Marshal.AllocHGlobal((int)size);
+			for (int i = 0; i < size; i++)
+			{
+				System.Runtime.InteropServices.Marshal.WriteByte(ptr, i, 0);
+			}
+			return ptr;
 		}
 		public static IntPtr realloc(IntPtr ptr, uint size)
 		{

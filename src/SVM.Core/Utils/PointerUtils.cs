@@ -9,9 +9,9 @@ namespace SVM.Core.Utils
 		{
 			return Marshal.PtrToStructure<T>(ptr);
 		}
-		public static T GetDataWithOffsetInBytes<T>(this IntPtr ptr, int Offset) where T : unmanaged
+		public unsafe static T GetDataWithOffsetInBytes<T>(this IntPtr ptr, int Offset) where T : unmanaged
 		{
-			return Marshal.PtrToStructure<T>(IntPtr.Add(ptr, Offset));
+			return ((T*)((byte*)(ptr + Offset)))[0];
 		}
 		public static T GetDataWithOffsetInStructCount<T>(this IntPtr ptr, int Count) where T : unmanaged
 		{

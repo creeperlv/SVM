@@ -209,6 +209,10 @@ namespace SVM.Core.Data
 		{
 			return new CompactSByte(Value % R.Value);
 		}
+		public override string ToString()
+		{
+			return this.Value.ToString();
+		}
 	}
 
 }

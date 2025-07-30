@@ -15,7 +15,8 @@ namespace SVM.Core
 		public void Init(uint size)
 		{
 			Size = size;
-			Data = malloc(size);
+			Console.WriteLine($"Allocating:{size}");
+			Data = calloc(size);
 		}
 		public T ReadData<T>(int RegisterID) where T : unmanaged
 		{
@@ -36,7 +37,19 @@ namespace SVM.Core
 		{
 			if (offset == 0) return;
 			if (offset + sizeof(T) > Size) return;
-			((T*)(Data + offset))[0] = d;
+			((T*)Data + offset)[0] = d;
+		}
+		public unsafe void SetDataInRegister<T>(int offset, T d) where T : unmanaged
+		{
+			if (offset == 0) return;
+			if (offset * sizeof(ulong) + sizeof(T) > Size) return;
+			((T*)((byte*)Data + offset * sizeof(ulong)))[0] = d;
+		}
+		public unsafe void SetDataOffsetInBytes<T>(int offset, T d) where T : unmanaged
+		{
+			if (offset == 0) return;
+			if (offset + sizeof(T) > Size) return;
+			((T*)((byte*)Data + offset))[0] = d;
 		}
 		public void Dispose()
 		{

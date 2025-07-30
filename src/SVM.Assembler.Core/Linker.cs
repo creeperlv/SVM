@@ -238,6 +238,7 @@ namespace SVM.Assembler.Core
 					{
 						if (Enum.TryParse<SVMNativeTypes>(input, out var enumV))
 						{
+							//Console.WriteLine($"{input}=>{enumV}");
 							WriteData(inst, parameter.ExpectdValue.Type, parameter.ExpectdValue.Pos, (byte*)&enumV);
 							return true;
 						}
