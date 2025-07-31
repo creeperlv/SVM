@@ -7,6 +7,7 @@ namespace SVM.Assembler.Core
 	[Serializable]
 	public class InstructionDefinition
 	{
+		public string Id="";
 		public PrimaryInstruction PrimaryInstruction = PrimaryInstruction.Nop;
 		public int InstructionCount = 1;
 		public List<string> Aliases = new List<string>();

@@ -37,8 +37,6 @@ namespace SVM.Core
 			{
 				return null;
 			}
-			Console.WriteLine(dataSectionLength);
-			Console.WriteLine(codeCount);
 			IntPtr dataPtr = malloc(dataSectionLength);
 			if (dataSectionLength != 0)
 			{

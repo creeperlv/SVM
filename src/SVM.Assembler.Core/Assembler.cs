@@ -17,6 +17,8 @@ Match:
 InstMath bmath
 InstSDInt32 sd\.int32
 InstSDInt sd\.int
+InstSDInt64 sd\.int64
+InstSDLong sd\.long
 InstCvt cvt
 InstSystem system
 InstSys sys
@@ -35,6 +37,8 @@ D \d
 
 Id:
 word Word
+InstSDInt64 inst
+InstSDLong inst
 InstMath inst
 InstSDInt inst
 InstSDInt32 inst
@@ -80,7 +84,7 @@ LabelConstant InternalLbl
 				if (r.Result.LexSegmentId != null && r.Result.LexMatchedItemId != null)
 				{
 					if (r.Result.LexSegmentId == "LE") continue;
-					
+
 					return r;
 				}
 
@@ -128,6 +132,7 @@ LabelConstant InternalLbl
 				operationResult.AddError(new ErrorWMsg($"Unknown Instruction:{LexDef.Content ?? "<null>"}", LexDef));
 				return operationResult;
 			}
+			intermediateInstruction.InstDefID = instructionDef.Id;
 			intermediateInstruction.inst = instructionDef.PrimaryInstruction;
 			foreach (var item in instructionDef.ParameterPattern)
 			{
@@ -250,7 +255,23 @@ LabelConstant InternalLbl
 		public Dictionary<string, string> data = new Dictionary<string, string>();
 		public Dictionary<string, string> consts = new Dictionary<string, string>();
 		public List<IntermediateInstruction> instructions = new List<IntermediateInstruction>();
+		public int DetermineFinalInstructionCount(LinkingContext context)
+		{
+			int count = 0;
+			foreach (var item in instructions)
+			{
+				if (context.Definition.InstructionDefinitions.TryGetValue(item.InstDefID, out var def))
+				{
+					count += def.InstructionCount;
+				}
+			}
+			return count;
+		}
 		public bool TryGetConst(string str, out string value)
+		{
+			return consts.TryGetValue(str, out value);
+		}
+		public bool TryGetDataOffset(string str, out string value)
 		{
 			return consts.TryGetValue(str, out value);
 		}
@@ -273,6 +294,7 @@ LabelConstant InternalLbl
 	public class IntermediateInstruction
 	{
 		public LexSegment? Label = null;
+		public string InstDefID = "";
 		public PrimaryInstruction inst;
 		public List<LexSegment> Parameters = new List<LexSegment>();
 	}

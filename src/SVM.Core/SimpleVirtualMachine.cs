@@ -64,7 +64,6 @@ namespace SVM.Core
 				ErrorIDOffset = Config.EIDRegisterID;
 			}
 			var PC = registers.GetData<ulong>((int)PCOffset);
-			Console.WriteLine($"{PC},{Program->InstructionCount}");
 			return PC >= Program->InstructionCount;
 		}
 
@@ -85,7 +84,6 @@ namespace SVM.Core
 			var currentInstPtr = GetPointer(PC);
 			var Instruction = currentInstPtr.GetData<SVMInstruction>();
 			var def = Instruction.GetDef();
-			Console.WriteLine(def);
 			fixed (MState* statePtr = &MachineState)
 			{
 
@@ -165,7 +163,7 @@ namespace SVM.Core
 							var dataPtr = GetPointer(PC);
 							var data = dataPtr.GetData<int>();
 							registers.SetDataInRegister(Reg, data);
-							Console.WriteLine($"SVM:SD:{data} form PC={PC}");
+							//Console.WriteLine($"SVM:SD:{data} form PC={PC}");
 						}
 						break;
 					case PrimaryInstruction.JAL:
@@ -190,7 +188,7 @@ namespace SVM.Core
 							}
 							else
 							{
-								registers.SetData((int)ErrorIDOffset,ErrorIDs.SyscallCallNotExist);
+								registers.SetData((int)ErrorIDOffset, ErrorIDs.SyscallCallNotExist);
 							}
 						}
 						else
@@ -305,12 +303,11 @@ namespace SVM.Core
 					offset1 = Program->DataSize;
 					if (absoluteAddress.offset < offset0)
 					{
-
 						return (IntPtr)(Program->instructions + absoluteAddress.offset / sizeof(SVMInstruction));
 					}
-					else if (absoluteAddress.offset < offset1)
+					else if (absoluteAddress.offset < offset0 + offset1)
 					{
-						return IntPtr.Add((IntPtr)Program->instructions, (int)(absoluteAddress.offset - offset0));
+						return IntPtr.Add((IntPtr)Program->data, (int)(absoluteAddress.offset - offset0));
 
 					}
 				}
@@ -358,6 +355,10 @@ namespace SVM.Core
 	{
 		public uint offset;
 		public uint index;
+		public override string ToString()
+		{
+			return $"{index}+{offset}";
+		}
 	}
 	public class SVMConfig
 	{

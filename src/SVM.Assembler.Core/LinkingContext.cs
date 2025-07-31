@@ -16,6 +16,15 @@ namespace SVM.Assembler.Core
 			IntermediateObject = intermediateObject;
 			Definition = definition;
 		}
+		public unsafe bool TryFindData(string label, out uint offset)
+		{
+			if (DataOffsets.TryGetValue(label, out offset))
+			{
+				offset += (uint)IntermediateObject.DetermineFinalInstructionCount(this) * (uint)sizeof(SVMInstruction);
+				return true;
+			}
+			return false;
+		}
 		public bool TryFindLabel(string label, out int offset)
 		{
 			label = label + ":";

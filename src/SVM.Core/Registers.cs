@@ -15,7 +15,6 @@ namespace SVM.Core
 		public void Init(uint size)
 		{
 			Size = size;
-			Console.WriteLine($"Allocating:{size}");
 			Data = calloc(size);
 		}
 		public T ReadData<T>(int RegisterID) where T : unmanaged

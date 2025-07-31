@@ -7,9 +7,20 @@ namespace SVM.Core.Utils
 {
 	public static class StreamUtils
 	{
+		public unsafe static void WriteData(this Stream s, IntPtr ptr, ulong length)
+		{
+			WriteData(s, (byte*)ptr, length);
+		}
+		public unsafe static void WriteData(this Stream s, byte* ptr, ulong length)
+		{
+			for (ulong i = 0; i < length; i++)
+			{
+				s.WriteByte(ptr[i]);
+			}
+		}
 		public unsafe static void WriteData<T>(this Stream s, T data) where T : unmanaged
 		{
-			var ptr=&data;
+			var ptr = &data;
 			Span<byte> buffer = new(ptr, sizeof(T));
 			s.Write(buffer);
 		}

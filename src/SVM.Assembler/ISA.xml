@@ -9,7 +9,7 @@
 		<Item Key="sp" Value="2"/>
 	</Registers>
 	<Definitions>
-		<InstructionDefinition PrimaryInstruction="BMath">
+		<InstructionDefinition Id="BMath" PrimaryInstruction="BMath">
 			<Aliases>
 				<Alias Name="bmath"/>
 				<Alias Name="b.math"/>
@@ -51,7 +51,7 @@
 				</InstructionParameter>
 			</Parameters>
 		</InstructionDefinition>
-		<InstructionDefinition PrimaryInstruction="SD" InstructionCount="2">
+		<InstructionDefinition Id="std.int32" PrimaryInstruction="SD" InstructionCount="2">
 			<Aliases>
 				<Alias Name="sd.int"/>
 				<Alias Name="sd.int32"/>
@@ -73,7 +73,29 @@
 				</InstructionParameter>
 			</Parameters>
 		</InstructionDefinition>
-		<InstructionDefinition PrimaryInstruction="System" InstructionCount="1">
+		<InstructionDefinition Id="sd.int64" PrimaryInstruction="SD" InstructionCount="2">
+			<Aliases>
+				<Alias Name="sd.long"/>
+				<Alias Name="sd.int64"/>
+			</Aliases>
+			<Parameters>
+				<InstructionParameter>
+					<MatchingItems>
+						<Item Id="Word"/>
+						<Item Id="Register"/>
+					</MatchingItems>
+					<ExpectedValue Type="UInt8" Pos="1" Converter="Register" />
+				</InstructionParameter>
+				<InstructionParameter>
+					<MatchingItems>
+						<Item Id="Number"/>
+						<Item Id="Word"/>
+					</MatchingItems>
+					<ExpectedValue Type="Int64" Pos="8" Converter="Integer64" />
+				</InstructionParameter>
+			</Parameters>
+		</InstructionDefinition>
+		<InstructionDefinition Id="syscall" PrimaryInstruction="System" InstructionCount="1">
 			<Aliases>
 				<Alias Name="system"/>
 				<Alias Name="sys"/>

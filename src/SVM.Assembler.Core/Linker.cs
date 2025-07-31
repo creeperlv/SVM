@@ -4,10 +4,13 @@ using SVM.Assembler.Core.Errors;
 using SVM.Core;
 using SVM.Core.Utils;
 using System;
+using System.Buffers.Text;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.IO;
 using System.Reflection.Emit;
 using System.Text;
+using System.Text.RegularExpressions;
 
 namespace SVM.Assembler.Core
 {
@@ -78,6 +81,16 @@ namespace SVM.Assembler.Core
 				{
 					return TryParseInt32(realStr, context, out value);
 				}
+				if (context.TryFindLabel(input, out var lblV))
+				{
+					value = lblV;
+					return true;
+				}
+				if (context.TryFindData(input, out var dataV))
+				{
+					value = (int)dataV;
+					return true;
+				}
 			}
 			value = byte.MaxValue;
 			return false;
@@ -93,6 +106,42 @@ namespace SVM.Assembler.Core
 				if (context.IntermediateObject.TryGetConst(input, out var realStr))
 				{
 					return TryParseInt64(realStr, context, out value);
+				}
+				if (context.TryFindLabel(input, out var lblV))
+				{
+					value = lblV;
+					return true;
+				}
+				if (context.TryFindData(input, out var dataV))
+				{
+					value = (long)dataV;
+					return true;
+				}
+			}
+			value = byte.MaxValue;
+			return false;
+		}
+		public static bool TryParseUInt64(string input, LinkingContext context, out ulong value)
+		{
+			if (ulong.TryParse(input, out value))
+			{
+				return true;
+			}
+			else
+			{
+				if (context.IntermediateObject.TryGetConst(input, out var realStr))
+				{
+					return TryParseUInt64(realStr, context, out value);
+				}
+				if (context.TryFindLabel(input, out var lblV))
+				{
+					value = (ulong)lblV;
+					return true;
+				}
+				if (context.TryFindData(input, out var dataV))
+				{
+					value = (ulong)dataV;
+					return true;
 				}
 			}
 			value = byte.MaxValue;
@@ -329,21 +378,60 @@ namespace SVM.Assembler.Core
 			uint offset = 0;
 			foreach (var item in Obj.data)
 			{
-				var data = Encoding.UTF8.GetBytes(item.Value);
-				byte[] data2 = new byte[data.Length + sizeof(int)];
-				fixed (byte* ptr = data2)
+				if (item.Value.StartsWith("base64:"))
 				{
-					int len = data.Length;
-					((IntPtr)ptr).SetData(len);
+					var eData = item.Value.Substring("base64:".Length);
+					var data = Convert.FromBase64String(eData);
+					byte[] data2 = new byte[data.Length + sizeof(int)];
+					fixed (byte* ptr = data2)
+					{
+						int len = data.Length;
+						((IntPtr)ptr).SetData(len);
+					}
+					Buffer.BlockCopy(data, 0, data2, sizeof(int), data.Length);
+					context.DataOffsets.Add(item.Key, offset);
 				}
-				Buffer.BlockCopy(data, 0, data2, sizeof(int), data.Length);
-				context.DataOffsets.Add(item.Key, offset);
-				offset += (uint)data2.Length;
-				Data.Add(data);
+				else if (item.Value.StartsWith("file:"))
+				{
+					var fileName = item.Value.Substring("file:".Length);
+					var data = File.ReadAllBytes(fileName);
+					byte[] data2 = new byte[data.Length + sizeof(int)];
+					fixed (byte* ptr = data2)
+					{
+						int len = data.Length;
+						((IntPtr)ptr).SetData(len);
+					}
+					Buffer.BlockCopy(data, 0, data2, sizeof(int), data.Length);
+					context.DataOffsets.Add(item.Key, offset);
+					offset += (uint)data2.Length;
+					Data.Add(data);
+				}
+				else
+				{
+					byte[] data;
+					string str=Regex.Unescape(item.Value);
+					if (str[0] == '\"' && str[^1] == '\"')
+					{
+						data = Encoding.UTF8.GetBytes(str, 1, str.Length - 2);
+
+					}
+					else
+						data = Encoding.UTF8.GetBytes(str);
+					byte[] data2 = new byte[data.Length + sizeof(int)];
+					fixed (byte* ptr = data2)
+					{
+						int len = data.Length;
+						((IntPtr)ptr).SetData(len);
+					}
+					Buffer.BlockCopy(data, 0, data2, sizeof(int), data.Length);
+					context.DataOffsets.Add(item.Key, offset);
+					offset += (uint)data2.Length;
+					Data.Add(data);
+				}
 			}
 			foreach (var item in Obj.instructions)
 			{
-				if (definition.InstructionDefinitions.TryGetValue(item.inst, out var def))
+				if (definition.InstructionDefinitions.TryGetValue(item.InstDefID, out var def))
 				{
 
 					var instruction = stackalloc SVMInstruction[def.InstructionCount];
@@ -361,6 +449,9 @@ namespace SVM.Assembler.Core
 						}
 
 					}
+				}
+				else
+				{
 				}
 			}
 			program.Datas = new byte[offset];

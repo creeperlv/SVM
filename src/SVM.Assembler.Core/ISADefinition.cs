@@ -15,7 +15,7 @@ namespace SVM.Assembler.Core
 	{
 		public Dictionary<string, byte> RegisterNames = new Dictionary<string, byte>();
 		public Dictionary<string, Dictionary<string, string>> Enums = new Dictionary<string, Dictionary<string, string>>();
-		public Dictionary<PrimaryInstruction, InstructionDefinition> InstructionDefinitions = new Dictionary<PrimaryInstruction, InstructionDefinition>();
+		public Dictionary<string, InstructionDefinition> InstructionDefinitions = new Dictionary<string, InstructionDefinition>();
 		[NonSerialized]
 		public Dictionary<string, InstructionDefinition> InstructionDefinitionAliases = new Dictionary<string, InstructionDefinition>();
 		public void Init()
@@ -117,7 +117,11 @@ namespace SVM.Assembler.Core
 			InstructionDefinition instDefinition = new InstructionDefinition();
 			var PIAttr = node.Attributes.GetNamedItem("PrimaryInstruction");
 			var ICAttr = node.Attributes.GetNamedItem("InstructionCount");
+			var IdAttr = node.Attributes.GetNamedItem("Id");
 			if (PIAttr == null) return false;
+			if (IdAttr == null) return false;
+			string Id = IdAttr.InnerText;
+			instDefinition.Id = Id;
 			if (ICAttr != null)
 			{
 				if (int.TryParse(ICAttr.InnerText, out var ic))
@@ -171,7 +175,7 @@ namespace SVM.Assembler.Core
 						break;
 				}
 			}
-			definition.InstructionDefinitions.Add(pi, instDefinition);
+			definition.InstructionDefinitions.Add(Id, instDefinition);
 			foreach (var item in instDefinition.Aliases)
 			{
 
