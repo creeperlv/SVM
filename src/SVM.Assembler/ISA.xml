@@ -73,5 +73,21 @@
 				</InstructionParameter>
 			</Parameters>
 		</InstructionDefinition>
+		<InstructionDefinition PrimaryInstruction="System" InstructionCount="1">
+			<Aliases>
+				<Alias Name="system"/>
+				<Alias Name="sys"/>
+				<Alias Name="syscall"/>
+			</Aliases>
+			<Parameters>
+				<InstructionParameter>
+					<MatchingItems>
+						<Item Id="Number"/>
+						<Item Id="Word"/>
+					</MatchingItems>
+					<ExpectedValue Type="Int32" Pos="4" Converter="Integer32" />
+				</InstructionParameter>
+			</Parameters>
+		</InstructionDefinition>
 	</Definitions>
 </ISARoot>

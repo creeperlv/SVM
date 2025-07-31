@@ -25,6 +25,8 @@ namespace SVM.Core
 		public MState MachineState;
 		public SVMProgram* Program = null;
 		public static uint InitGPMemorySize = 696320;
+		public Object? AdditionalData = null;
+		public ErrorIDs ErrorIDs = new ErrorIDs();
 		public void Init(uint StackSize = 1024 * 1024, uint RegisterSize = 512, uint GPMemory = uint.MaxValue)
 		{
 			registers.Init(RegisterSize);
@@ -181,11 +183,19 @@ namespace SVM.Core
 					case PrimaryInstruction.System:
 						if (Config != null)
 						{
-							var target = Instruction.GetData<uint>(1);
+							var target = Instruction.GetData<uint>(4);
 							if (Config.FuncCalls.TryGetValue(target, out var func))
 							{
 								func(this);
 							}
+							else
+							{
+								registers.SetData((int)ErrorIDOffset,ErrorIDs.SyscallCallNotExist);
+							}
+						}
+						else
+						{
+							registers.SetData((int)ErrorIDOffset, ErrorIDs.SyscallCallNotExist);
 						}
 						break;
 					case PrimaryInstruction.SIMD:
@@ -358,6 +368,11 @@ namespace SVM.Core
 		/// Error ID Register.
 		/// </summary>
 		public uint EIDRegisterID;
+	}
+	public class ErrorIDs
+	{
+		public int SyscallCallNotExist = 1;
+		public int MAX_ERROR_ID = short.MaxValue;
 	}
 	public delegate void FuncCall(SimpleVirtualMachine machine);
 	[StructLayout(LayoutKind.Sequential)]

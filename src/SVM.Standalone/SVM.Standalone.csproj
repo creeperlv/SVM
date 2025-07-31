@@ -1,6 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <ItemGroup>
+    <ProjectReference Include="..\SVM.Advanced\SVM.Advanced.csproj" />
     <ProjectReference Include="..\SVM.Core\SVM.Core.csproj" />
   </ItemGroup>
 

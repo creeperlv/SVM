@@ -1,4 +1,5 @@
-﻿using SVM.Core;
+﻿using SVM.Advanced.BSDStyleVM;
+using SVM.Core;
 
 namespace SVM.Standalone;
 
@@ -25,10 +26,10 @@ class Program
 		{
 			Program = program
 		};
+		BSDLikeWrapper wrapper = new BSDLikeWrapper(svm);
 		svm.Init();
 		while (!svm.isReachBinaryEnd())
 		{
-			Console.WriteLine("Step");
 			svm.Step();
 		}
 	}
