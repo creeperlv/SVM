@@ -20,7 +20,8 @@ namespace SVM.Assembler.Core
 		{
 			if (DataOffsets.TryGetValue(label, out offset))
 			{
-				offset += (uint)IntermediateObject.DetermineFinalInstructionCount(this) * (uint)sizeof(SVMInstruction);
+				//Don't directly give the length there.
+				offset += (uint)IntermediateObject.DetermineFinalInstructionCount(this) * (uint)sizeof(SVMInstruction)+sizeof(int);
 				return true;
 			}
 			return false;

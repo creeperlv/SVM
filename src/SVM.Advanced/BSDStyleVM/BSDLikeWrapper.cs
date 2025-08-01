@@ -4,6 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
+using System.Text;
 
 namespace SVM.Advanced.BSDStyleVM
 {
@@ -19,7 +20,15 @@ namespace SVM.Advanced.BSDStyleVM
 			FDs.Add(0, new FileDescripter(Console.OpenStandardInput()));
 			FDs.Add(1, new FileDescripter(Console.OpenStandardOutput()));
 		}
-
+		public int FindAvailableFDID()
+		{
+			for (int i = 0; i < int.MaxValue; i++)
+			{
+				if (FDs.ContainsKey(i)) continue;
+				return i;
+			}
+			return -1;
+		}
 	}
 	public class BSDConfig
 	{
@@ -38,6 +47,13 @@ namespace SVM.Advanced.BSDStyleVM
 			config.FuncCalls.Add(4, BSDStyleFunctions0.__write);
 		}
 	}
+	public static class BSDFcntl
+	{
+		public const int O_RDONLY = 0x0;
+		public const int O_WRONLY = 0x01;
+		public const int O_RDWR = 0x02;
+		public const int O_ACCMODE = 0x03;
+	}
 	public static class BSDStyleFunctions0
 	{
 		public static void __exit(SimpleVirtualMachine machine)
@@ -45,7 +61,32 @@ namespace SVM.Advanced.BSDStyleVM
 			var status = machine.registers.GetData<int>(10);
 			Environment.Exit(status);
 		}
-		public static void __write(SimpleVirtualMachine machine)
+		public unsafe static void __open(SimpleVirtualMachine machine)
+		{
+			if (machine.AdditionalData is BSDLikeWrapper w)
+			{
+				var ptr = machine.registers.GetData<SVMPointer>(10);
+				var size = machine.registers.GetData<ulong>(11);
+				var flag = machine.registers.GetData<int>(12);
+				var fn = Encoding.UTF8.GetString((byte*)machine.GetPointer(ptr), (int)size);
+				FileMode fm = default;
+				FileAccess fa = default;
+				if ((flag & BSDFcntl.O_WRONLY) == BSDFcntl.O_WRONLY)
+				{
+					fa = FileAccess.Write;
+				}
+				var fdID = w.FindAvailableFDID();
+				if (fdID == -1) return;
+				var stream = File.Open(fn, fm, fa);
+				FileDescripter fd = new FileDescripter(stream);
+				w.FDs.Add(fdID, fd);
+			}
+			else
+			{
+				Console.WriteLine("Incorrectly set wrapper!");
+			}
+		}
+		public unsafe static void __write(SimpleVirtualMachine machine)
 		{
 			if (machine.AdditionalData is BSDLikeWrapper w)
 			{

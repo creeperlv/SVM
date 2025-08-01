@@ -390,6 +390,7 @@ namespace SVM.Assembler.Core
 					}
 					Buffer.BlockCopy(data, 0, data2, sizeof(int), data.Length);
 					context.DataOffsets.Add(item.Key, offset);
+					Data.Add(data2);
 				}
 				else if (item.Value.StartsWith("file:"))
 				{
@@ -404,12 +405,12 @@ namespace SVM.Assembler.Core
 					Buffer.BlockCopy(data, 0, data2, sizeof(int), data.Length);
 					context.DataOffsets.Add(item.Key, offset);
 					offset += (uint)data2.Length;
-					Data.Add(data);
+					Data.Add(data2);
 				}
 				else
 				{
 					byte[] data;
-					string str=Regex.Unescape(item.Value);
+					string str = Regex.Unescape(item.Value);
 					if (str[0] == '\"' && str[^1] == '\"')
 					{
 						data = Encoding.UTF8.GetBytes(str, 1, str.Length - 2);
@@ -417,16 +418,16 @@ namespace SVM.Assembler.Core
 					}
 					else
 						data = Encoding.UTF8.GetBytes(str);
-					byte[] data2 = new byte[data.Length + sizeof(int)];
+					byte[] data2 = new byte[data.Length + sizeof(int) + sizeof(char)];
 					fixed (byte* ptr = data2)
 					{
-						int len = data.Length;
+						int len = data.Length + sizeof(char);
 						((IntPtr)ptr).SetData(len);
 					}
 					Buffer.BlockCopy(data, 0, data2, sizeof(int), data.Length);
 					context.DataOffsets.Add(item.Key, offset);
 					offset += (uint)data2.Length;
-					Data.Add(data);
+					Data.Add(data2);
 				}
 			}
 			foreach (var item in Obj.instructions)
