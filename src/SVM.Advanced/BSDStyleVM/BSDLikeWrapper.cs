@@ -45,6 +45,7 @@ namespace SVM.Advanced.BSDStyleVM
 		{
 			config.FuncCalls.Add(1, BSDStyleFunctions0.__exit);
 			config.FuncCalls.Add(4, BSDStyleFunctions0.__write);
+			config.FuncCalls.Add(5, BSDStyleFunctions0.__open);
 		}
 	}
 	public static class BSDFcntl
@@ -69,7 +70,7 @@ namespace SVM.Advanced.BSDStyleVM
 				var size = machine.registers.GetData<ulong>(11);
 				var flag = machine.registers.GetData<int>(12);
 				var fn = Encoding.UTF8.GetString((byte*)machine.GetPointer(ptr), (int)size);
-				FileMode fm = default;
+				FileMode fm = FileMode.Create;
 				FileAccess fa = default;
 				if ((flag & BSDFcntl.O_WRONLY) == BSDFcntl.O_WRONLY)
 				{
@@ -80,6 +81,7 @@ namespace SVM.Advanced.BSDStyleVM
 				var stream = File.Open(fn, fm, fa);
 				FileDescripter fd = new FileDescripter(stream);
 				w.FDs.Add(fdID, fd);
+				machine.registers.SetDataInRegister<int>(10,fdID);
 			}
 			else
 			{
@@ -95,7 +97,9 @@ namespace SVM.Advanced.BSDStyleVM
 				var size = machine.registers.GetData<ulong>(12);
 				if (w.FDs.TryGetValue(fd, out var descripter))
 				{
+					Console.OpenStandardOutput().WriteData(machine.GetPointer(ptr), size);
 					descripter.stream.WriteData(machine.GetPointer(ptr), size);
+					descripter.stream.Flush();
 				}
 				else
 					Console.WriteLine($"FD:{fd} does not exist.");

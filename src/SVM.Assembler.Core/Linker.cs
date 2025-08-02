@@ -69,6 +69,32 @@ namespace SVM.Assembler.Core
 			registerID = byte.MaxValue;
 			return false;
 		}
+		public static bool TryParseUInt8(string input, LinkingContext context, out byte value)
+		{
+			if (byte.TryParse(input, out value))
+			{
+				return true;
+			}
+			else
+			{
+				if (context.IntermediateObject.TryGetConst(input, out var realStr))
+				{
+					return TryParseUInt8(realStr, context, out value);
+				}
+				if (context.TryFindLabel(input, out var lblV))
+				{
+					value = (byte)lblV;
+					return true;
+				}
+				if (context.TryFindData(input, out var dataV))
+				{
+					value = (byte)dataV;
+					return true;
+				}
+			}
+			value = byte.MaxValue;
+			return false;
+		}
 		public static bool TryParseInt32(string input, LinkingContext context, out int value)
 		{
 			if (int.TryParse(input, out value))
@@ -356,6 +382,27 @@ namespace SVM.Assembler.Core
 								if (!TryParseInt32(para.Content, context, out var registerID))
 								{
 									result.AddError(new ErrorWMsg($"{para.Content} cannot be parsed to Integer32!", para));
+									return result;
+								}
+								WriteData(instruction, paraDef.ExpectdValue.Type, paraDef.ExpectdValue.Pos, (byte*)&registerID);
+							}
+							break;
+						case "Integer64":
+							{
+								if (!TryParseInt64(para.Content, context, out var registerID))
+								{
+									result.AddError(new ErrorWMsg($"{para.Content} cannot be parsed to Integer64!", para));
+									return result;
+								}
+								WriteData(instruction, paraDef.ExpectdValue.Type, paraDef.ExpectdValue.Pos, (byte*)&registerID);
+							}
+							break;
+						case "UnsignedInteger8":
+						case "UInt8":
+							{
+								if (!TryParseUInt8(para.Content, context, out var registerID))
+								{
+									result.AddError(new ErrorWMsg($"{para.Content} cannot be parsed to Unsigned Integer8!", para));
 									return result;
 								}
 								WriteData(instruction, paraDef.ExpectdValue.Type, paraDef.ExpectdValue.Pos, (byte*)&registerID);

@@ -44,6 +44,12 @@ namespace SVM.Core
 			if (offset * sizeof(ulong) + sizeof(T) > Size) return;
 			((T*)((byte*)Data + offset * sizeof(ulong)))[0] = d;
 		}
+		public unsafe void SetDataInRegister(int offset, IntPtr ptr, int size)
+		{
+			if (offset == 0) return;
+			if (offset * sizeof(ulong) + size > Size) return;
+			Buffer.MemoryCopy((byte*)ptr, (byte*)Data + offset * sizeof(ulong), size, size);
+		}
 		public unsafe void SetDataOffsetInBytes<T>(int offset, T d) where T : unmanaged
 		{
 			if (offset == 0) return;

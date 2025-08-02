@@ -171,6 +171,15 @@ namespace SVM.Core
 					case PrimaryInstruction.JALF:
 						break;
 					case PrimaryInstruction.Load:
+						{
+							var Reg = Instruction.GetData<byte>(1);
+							var Length = Instruction.GetData<byte>(2);
+							var Target = Instruction.GetData<byte>(3);
+							var source = registers.GetData<SVMPointer>(Reg);
+							var srcPtr = GetPointer(source);
+							registers.SetDataInRegister(Target, srcPtr, Length);
+						}
+
 						break;
 					case PrimaryInstruction.Save:
 						break;
