@@ -14,15 +14,6 @@ namespace SVM.Assembler.Core
 @"
 Match:
 
-InstMath bmath
-InstSDInt32 sd\.int32
-InstSDInt sd\.int
-InstSDInt64 sd\.int64
-InstSDLong sd\.long
-InstCvt cvt
-InstSystem system
-InstSys sys
-InstSD sd
 Register \${D}+
 LabelCode \.code\:
 LabelData \.data\:
@@ -37,15 +28,6 @@ D \d
 
 Id:
 word Word
-InstSDInt64 inst
-InstSDLong inst
-InstMath inst
-InstSDInt inst
-InstSDInt32 inst
-InstCvt inst
-InstSystem inst
-InstSys inst
-InstSD sd
 string String
 Number Number
 Register Register
