@@ -182,6 +182,15 @@ namespace SVM.Core
 
 						break;
 					case PrimaryInstruction.Save:
+						{
+							var Reg = Instruction.GetData<byte>(1);
+							var Length = Instruction.GetData<byte>(2);
+							var Target = Instruction.GetData<byte>(3);
+							var tgtSVMPtr = registers.GetData<SVMPointer>(Target);
+							var tgtPtr = GetPointer(tgtSVMPtr);
+							var srcPtr = registers.GetPtr(Reg);
+							Buffer.MemoryCopy(srcPtr, (byte*)tgtPtr, Length, Length);
+						}
 						break;
 					case PrimaryInstruction.Call:
 						break;

@@ -169,5 +169,34 @@
 				</InstructionParameter>
 			</Parameters>
 		</InstructionDefinition>
+		<InstructionDefinition Id="load" PrimaryInstruction="Save" InstructionCount="1">
+			<Aliases>
+				<Alias Name="load"/>
+				<Alias Name="ld"/>
+			</Aliases>
+			<Parameters>
+				<InstructionParameter>
+					<MatchingItems>
+						<Item Id="Register"/>
+						<Item Id="Word"/>
+					</MatchingItems>
+					<ExpectedValue Type="UInt8" Pos="1" Converter="Register" />
+				</InstructionParameter>
+				<InstructionParameter>
+					<MatchingItems>
+						<Item Id="Number"/>
+						<Item Id="Word"/>
+					</MatchingItems>
+					<ExpectedValue Type="UInt8" Pos="2" Converter="UInt8" />
+				</InstructionParameter>
+				<InstructionParameter>
+					<MatchingItems>
+						<Item Id="Register"/>
+						<Item Id="Word"/>
+					</MatchingItems>
+					<ExpectedValue Type="UInt8" Pos="3" Converter="Register" />
+				</InstructionParameter>
+			</Parameters>
+		</InstructionDefinition>
 	</Definitions>
 </ISARoot>
