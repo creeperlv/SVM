@@ -27,6 +27,7 @@ namespace SVM.Core
 		public static uint InitGPMemorySize = 696320;
 		public Object? AdditionalData = null;
 		public ErrorIDs ErrorIDs = new ErrorIDs();
+		public DebugSymbol? symbols;
 		public void Init(uint StackSize = 1024 * 1024, uint RegisterSize = 512, uint GPMemory = uint.MaxValue)
 		{
 			registers.Init(RegisterSize);
@@ -51,7 +52,29 @@ namespace SVM.Core
 				block.Init(GPMemory);
 				SetMemory(1, block);
 				registers.SetData<SVMPointer>((int)CFOffset, new SVMPointer() { index = 1, offset = 0 });
+
+				var cfPtr = GetPointer(ReadCallFrameRegisterAsPtr());
+				cfPtr.SetData(ulong.MaxValue - 4);
 				registers.SetData<SVMPointer>((int)SPOffset, new SVMPointer() { index = 1, offset = StackSize });
+			}
+		}
+		public void Invoke(ulong PC)
+		{
+			while (true)
+			{
+				var ptr = ReadCallFrameRegisterAsPtr();
+				if (ptr.offset == 0) return;
+				Step();
+			}
+		}
+		public void Invoke(string funcName)
+		{
+			if (symbols != null)
+			{
+				if (symbols.Functions.TryGetValue(funcName, out var func))
+				{
+					Invoke(func);
+				}
 			}
 		}
 		public bool isReachBinaryEnd()
@@ -233,6 +256,7 @@ namespace SVM.Core
 							var cfPtr = GetPointer(ReadCallFrameRegisterAsPtr());
 							PC = cfPtr.GetData<ulong>();
 							PC -= 1;
+							WriteCallFrameRegister(ReadCallFrameRegister() - 1);
 						}
 						break;
 					case PrimaryInstruction.System:
