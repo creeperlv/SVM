@@ -6,7 +6,8 @@
 	</Enums>
 	<Registers>
 		<Item Key="pc" Value="1"/>
-		<Item Key="sp" Value="2"/>
+		<Item Key="cf" Value="2"/>
+		<Item Key="sp" Value="3"/>
 	</Registers>
 	<Definitions>
 		<InstructionDefinition Id="BMath" PrimaryInstruction="BMath">
@@ -100,6 +101,35 @@
 				<Alias Name="system"/>
 				<Alias Name="sys"/>
 				<Alias Name="syscall"/>
+			</Aliases>
+			<Parameters>
+				<InstructionParameter>
+					<MatchingItems>
+						<Item Id="Number"/>
+						<Item Id="Word"/>
+					</MatchingItems>
+					<ExpectedValue Type="Int32" Pos="4" Converter="Integer32" />
+				</InstructionParameter>
+			</Parameters>
+		</InstructionDefinition>
+		<InstructionDefinition Id="call" PrimaryInstruction="Call" InstructionCount="2">
+			<Aliases>
+				<Alias Name="call"/>
+				<Alias Name="c"/>
+			</Aliases>
+			<Parameters>
+				<InstructionParameter>
+					<MatchingItems>
+						<Item Id="Number"/>
+						<Item Id="Word"/>
+					</MatchingItems>
+					<ExpectedValue Type="Int64" Pos="8" Converter="Integer64" />
+				</InstructionParameter>
+			</Parameters>
+		</InstructionDefinition>
+		<InstructionDefinition Id="return" PrimaryInstruction="Return" InstructionCount="1">
+			<Aliases>
+				<Alias Name="return"/>
 			</Aliases>
 			<Parameters>
 				<InstructionParameter>
