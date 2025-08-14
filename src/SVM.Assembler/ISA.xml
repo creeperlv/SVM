@@ -130,6 +130,7 @@
 		<InstructionDefinition Id="return" PrimaryInstruction="Return" InstructionCount="1">
 			<Aliases>
 				<Alias Name="return"/>
+				<Alias Name="ret"/>
 			</Aliases>
 			<Parameters>
 				<InstructionParameter>

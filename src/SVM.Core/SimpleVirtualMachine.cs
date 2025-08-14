@@ -217,9 +217,9 @@ namespace SVM.Core
 							//Console.WriteLine($"SVM:SD:{data} form PC={PC}");
 						}
 						break;
-					case PrimaryInstruction.JAL:
+					case PrimaryInstruction.JMP:
 						break;
-					case PrimaryInstruction.JALF:
+					case PrimaryInstruction.JIF:
 						break;
 					case PrimaryInstruction.Load:
 						{

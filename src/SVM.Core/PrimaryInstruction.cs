@@ -26,13 +26,13 @@
 		SD,
 
 		// 0	1
-		// JAL	RD
+		// JMP	RD
 		// [I]Address (int32)
-		JAL,
+		JMP,
 		// Jump And Link If Conditional Register is set.
-		// JALF RD FlagID
+		// JIF RD FlagID
 		// [I]Address (int32)
-		JALF,
+		JIF,
 		// 0	1			2		3
 		// Load [R]Address	[I]Len	[R]T
 		Load,
