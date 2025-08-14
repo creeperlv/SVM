@@ -36,7 +36,7 @@ namespace SVM.Advanced.BSDStyleVM
 		{
 			var config = new SVMConfig();
 			config.PCRegisterID = 1;
-			config.SPRegisterID = 2;
+			config.CFRegisterID = 2;
 
 			SetupSyscall(config);
 			return config;

@@ -31,10 +31,11 @@ namespace SVM.Core
 		{
 			registers.Init(RegisterSize);
 
-			uint SPOffset = 2;
+			uint CFOffset = 2;
+			uint SPOffset = 3;
 			if (Config != null)
 			{
-				SPOffset = Config.SPRegisterID;
+				CFOffset = Config.CFRegisterID;
 			}
 			if (GPMemory == 0)
 			{
@@ -49,32 +50,59 @@ namespace SVM.Core
 				MemoryBlock block = new MemoryBlock();
 				block.Init(GPMemory);
 				SetMemory(1, block);
-				registers.SetData<SVMPointer>((int)SPOffset, new SVMPointer() { index = 1, offset = 0 });
+				registers.SetData<SVMPointer>((int)CFOffset, new SVMPointer() { index = 1, offset = 0 });
+				registers.SetData<SVMPointer>((int)SPOffset, new SVMPointer() { index = 1, offset = StackSize });
 			}
 		}
 		public bool isReachBinaryEnd()
 		{
-			uint SPOffset = 2;
 			uint PCOffset = 1;
-			uint ErrorIDOffset = 3;
 			if (Config != null)
 			{
-				SPOffset = Config.SPRegisterID;
 				PCOffset = Config.PCRegisterID;
-				ErrorIDOffset = Config.EIDRegisterID;
 			}
 			var PC = registers.GetData<ulong>((int)PCOffset);
 			return PC >= Program->InstructionCount;
 		}
+		public void WriteCallFrameRegister(ulong value)
+		{
 
+			uint CFOffset = 2;
+
+			if (Config != null)
+			{
+				CFOffset = Config.CFRegisterID;
+			}
+			registers.SetDataInRegister((int)CFOffset, value);
+		}
+		public ulong ReadCallFrameRegister()
+		{
+			uint CFOffset = 2;
+
+			if (Config != null)
+			{
+				CFOffset = Config.CFRegisterID;
+			}
+			return registers.GetData<ulong>((int)CFOffset);
+		}
+		public SVMPointer ReadCallFrameRegisterAsPtr()
+		{
+			uint CFOffset = 2;
+
+			if (Config != null)
+			{
+				CFOffset = Config.CFRegisterID;
+			}
+			return registers.GetData<SVMPointer>((int)CFOffset);
+		}
 		public void Step()
 		{
-			uint SPOffset = 2;
+			uint CFOffset = 2;
 			uint PCOffset = 1;
 			uint ErrorIDOffset = 3;
 			if (Config != null)
 			{
-				SPOffset = Config.SPRegisterID;
+				CFOffset = Config.CFRegisterID;
 				PCOffset = Config.PCRegisterID;
 				ErrorIDOffset = Config.EIDRegisterID;
 			}
@@ -193,8 +221,19 @@ namespace SVM.Core
 						}
 						break;
 					case PrimaryInstruction.Call:
+						WriteCallFrameRegister(ReadCallFrameRegister() + 1);
+						{
+							var cfPtr = GetPointer(ReadCallFrameRegisterAsPtr());
+							cfPtr.SetData(PC + 1);
+						}
 						break;
 					case PrimaryInstruction.Return:
+						{
+
+							var cfPtr = GetPointer(ReadCallFrameRegisterAsPtr());
+							PC = cfPtr.GetData<ulong>();
+							PC -= 1;
+						}
 						break;
 					case PrimaryInstruction.System:
 						if (Config != null)
@@ -222,7 +261,7 @@ namespace SVM.Core
 			}
 			PC++;
 			registers.SetData<ulong>((int)PCOffset, PC);
-			PC = registers.GetData<ulong>((int)PCOffset);
+			//PC = registers.GetData<ulong>((int)PCOffset);
 		}
 
 		private void Convert(SVMInstruction Instruction)
@@ -381,8 +420,10 @@ namespace SVM.Core
 	public class SVMConfig
 	{
 		public Dictionary<uint, FuncCall> FuncCalls = new Dictionary<uint, FuncCall>();
-		public uint SPRegisterID;
+		//Call Frame ID
+		public uint CFRegisterID;
 		public uint PCRegisterID;
+		public uint SPRegisterID;
 		/// <summary>
 		/// Error ID Register.
 		/// </summary>
