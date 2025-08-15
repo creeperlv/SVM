@@ -77,6 +77,15 @@ namespace SVM.Core
 				}
 			}
 		}
+		public ulong GetPC()
+		{
+			uint PCOffset = 1;
+			if (Config != null)
+			{
+				PCOffset = Config.PCRegisterID;
+			}
+			return registers.GetData<ulong>((int)PCOffset);
+		}
 		public bool isReachBinaryEnd()
 		{
 			uint PCOffset = 1;
@@ -214,12 +223,44 @@ namespace SVM.Core
 							var dataPtr = GetPointer(PC);
 							var data = dataPtr.GetData<int>();
 							registers.SetDataInRegister(Reg, data);
-							//Console.WriteLine($"SVM:SD:{data} form PC={PC}");
+							Console.WriteLine($"SVM:SD:{data} to {Reg} form PC={PC}");
 						}
 						break;
 					case PrimaryInstruction.JMP:
+						{
+							var RegisterID = Instruction.GetData<byte>(1);
+							PC = registers.ReadData<ulong>(RegisterID);
+							Console.WriteLine($"Jump to:{PC}");
+							PC--;
+						}
 						break;
 					case PrimaryInstruction.JIF:
+						{
+							var RegisterID = Instruction.GetData<byte>(1);
+							var FlagID = Instruction.GetData<ConditionFlag>(2);
+							bool isSet = false;
+							unsafe
+							{
+
+								switch (FlagID)
+								{
+									case ConditionFlag.CF:
+										isSet = statePtr->CF != 0;
+										break;
+									case ConditionFlag.Of:
+										isSet = statePtr->OF != 0;
+										break;
+									default:
+										break;
+								}
+							}
+							if (isSet)
+							{
+
+								PC = registers.ReadData<ulong>(RegisterID);
+								PC--;
+							}
+						}
 						break;
 					case PrimaryInstruction.Load:
 						{
@@ -248,6 +289,10 @@ namespace SVM.Core
 						{
 							var cfPtr = GetPointer(ReadCallFrameRegisterAsPtr());
 							cfPtr.SetData(PC + 1);
+							var RegisterID = Instruction.GetData<byte>(1);
+							PC = registers.ReadData<ulong>(RegisterID);
+							Console.WriteLine($"Call to:{PC} ({RegisterID})");
+							PC--;
 						}
 						break;
 					case PrimaryInstruction.Return:

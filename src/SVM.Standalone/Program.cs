@@ -30,7 +30,16 @@ class Program
 		svm.Init();
 		while (!svm.isReachBinaryEnd())
 		{
-			svm.Step();
+			try
+			{
+				svm.Step();
+			}
+			catch (Exception e)
+			{
+				Console.WriteLine($"Error at:{svm.GetPC()}");
+				Console.WriteLine(e);
+				throw;
+			}
 		}
 	}
 }

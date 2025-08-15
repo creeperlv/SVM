@@ -75,6 +75,10 @@ namespace SVM.Assembler
 				if (fResult.HasError())
 				{
 					Console.Error.WriteLine("Finalizer error!");
+					foreach (var item in fResult.Errors)
+					{
+						Console.Error.WriteLine(item.ToString());
+					}
 					return;
 				}
 				if (fResult.Result == null)

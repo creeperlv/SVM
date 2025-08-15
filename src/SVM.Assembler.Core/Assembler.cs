@@ -18,8 +18,8 @@ Register \${D}+
 LabelCode \.code\:
 LabelData \.data\:
 LabelConst \.const\:
-word [\w\d\.]+
 GenericLabel {word}\:
+word [\w\d\.]+
 LineEnd \n
 string ""\"".*\""""
 Number \d+
@@ -133,7 +133,7 @@ LabelConstant InternalLbl
 				}
 				if (!item.AllowedTokenIds.Contains(next.Result.LexSegmentId))
 				{
-					operationResult.AddError(new ErrorWMsg($"Token: {LexDef.Content ?? "<null>"} is not allowed here.", LexDef));
+					operationResult.AddError(new ErrorWMsg($"Token: {LexDef.Content ?? "<null>"} is not allowed here. Current context:{instructionDef.Id}", LexDef));
 					return operationResult;
 				}
 				intermediateInstruction.Parameters.Add(next.Result);

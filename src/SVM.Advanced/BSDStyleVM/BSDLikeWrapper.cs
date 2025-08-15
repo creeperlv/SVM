@@ -60,6 +60,7 @@ namespace SVM.Advanced.BSDStyleVM
 		public static void __exit(SimpleVirtualMachine machine)
 		{
 			var status = machine.registers.GetData<int>(10);
+			Console.WriteLine($"Bye with {status}.");
 			Environment.Exit(status);
 		}
 		public unsafe static void __open(SimpleVirtualMachine machine)
@@ -81,7 +82,7 @@ namespace SVM.Advanced.BSDStyleVM
 				var stream = File.Open(fn, fm, fa);
 				FileDescripter fd = new FileDescripter(stream);
 				w.FDs.Add(fdID, fd);
-				machine.registers.SetDataInRegister<int>(10,fdID);
+				machine.registers.SetDataInRegister<int>(10, fdID);
 			}
 			else
 			{
@@ -97,7 +98,9 @@ namespace SVM.Advanced.BSDStyleVM
 				var size = machine.registers.GetData<ulong>(12);
 				if (w.FDs.TryGetValue(fd, out var descripter))
 				{
+					Console.Write("\"");
 					Console.OpenStandardOutput().WriteData(machine.GetPointer(ptr), size);
+					Console.WriteLine($"\">>{fd}");
 					descripter.stream.WriteData(machine.GetPointer(ptr), size);
 					descripter.stream.Flush();
 				}

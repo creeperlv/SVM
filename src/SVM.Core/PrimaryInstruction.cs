@@ -26,12 +26,11 @@
 		SD,
 
 		// 0	1
-		// JMP	RD
-		// [I]Address (int32)
+		// JMP	[R]TargetPC
 		JMP,
-		// Jump And Link If Conditional Register is set.
-		// JIF RD FlagID
-		// [I]Address (int32)
+		// Jump If Conditional Register is set.
+		// 0	1			2
+		// JIF [R]TargetPC	[I]FlagID
 		JIF,
 		// 0	1			2		3
 		// Load [R]Address	[I]Len	[R]T
@@ -39,9 +38,8 @@
 		// 0	1		2		3
 		// Load [R]Src	[I]Len	[R]TAddr
 		Save,
-		// 0 
-		// Call
-		// [I]Address (int64)
+		// 0	1
+		// Call [R]Address
 		Call,
 		// Return
 		Return,
@@ -77,7 +75,7 @@
 		Float,
 		Double,
 	}
-	public enum ConditionFlag
+	public enum ConditionFlag : byte
 	{
 		/// <summary>
 		/// Compare Flag

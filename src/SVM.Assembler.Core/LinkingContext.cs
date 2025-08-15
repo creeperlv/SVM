@@ -21,7 +21,7 @@ namespace SVM.Assembler.Core
 			if (DataOffsets.TryGetValue(label, out offset))
 			{
 				//Don't directly give the length there.
-				offset += (uint)IntermediateObject.DetermineFinalInstructionCount(this) * (uint)sizeof(SVMInstruction)+sizeof(int);
+				offset += (uint)IntermediateObject.DetermineFinalInstructionCount(this) * (uint)sizeof(SVMInstruction) + sizeof(int);
 				return true;
 			}
 			return false;
@@ -33,16 +33,18 @@ namespace SVM.Assembler.Core
 			{
 				return true;
 			}
+			int acc=0;
 			for (int i = 0; i < IntermediateObject.instructions.Count; i++)
 			{
 				IntermediateInstruction? item = IntermediateObject.instructions[i];
 				if (item.Label != null)
 					if (item.Label.Content == label)
 					{
-						this.label.Add(label, i);
-						offset = i;
+						this.label.Add(label, acc);
+						offset = acc;
 						return true;
 					}
+				acc += Definition.InstructionDefinitions[item.InstDefID].InstructionCount;
 			}
 			return false;
 		}

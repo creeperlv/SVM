@@ -52,7 +52,7 @@
 				</InstructionParameter>
 			</Parameters>
 		</InstructionDefinition>
-		<InstructionDefinition Id="std.int32" PrimaryInstruction="SD" InstructionCount="2">
+		<InstructionDefinition Id="sd.int32" PrimaryInstruction="SD" InstructionCount="2">
 			<Aliases>
 				<Alias Name="sd.int"/>
 				<Alias Name="sd.int32"/>
@@ -112,7 +112,7 @@
 				</InstructionParameter>
 			</Parameters>
 		</InstructionDefinition>
-		<InstructionDefinition Id="call" PrimaryInstruction="Call" InstructionCount="2">
+		<InstructionDefinition Id="call" PrimaryInstruction="Call" InstructionCount="1">
 			<Aliases>
 				<Alias Name="call"/>
 				<Alias Name="c"/>
@@ -122,8 +122,49 @@
 					<MatchingItems>
 						<Item Id="Number"/>
 						<Item Id="Word"/>
+						<Item Id="Register"/>
 					</MatchingItems>
-					<ExpectedValue Type="Int64" Pos="8" Converter="Integer64" />
+					<ExpectedValue Type="UInt8" Pos="1" Converter="Register" />
+				</InstructionParameter>
+			</Parameters>
+		</InstructionDefinition>
+		<InstructionDefinition Id="jmp" PrimaryInstruction="JMP" InstructionCount="1">
+			<Aliases>
+				<Alias Name="j"/>
+				<Alias Name="jmp"/>
+			</Aliases>
+			<Parameters>
+				<InstructionParameter>
+					<MatchingItems>
+						<Item Id="Number"/>
+						<Item Id="Word"/>
+						<Item Id="Register"/>
+					</MatchingItems>
+					<ExpectedValue Type="UInt8" Pos="1" Converter="Register" />
+				</InstructionParameter>
+			</Parameters>
+		</InstructionDefinition>
+		<InstructionDefinition Id="jif" PrimaryInstruction="JIF" InstructionCount="1">
+			<Aliases>
+				<Alias Name="jif"/>
+				<Alias Name="jf"/>
+				<Alias Name="jmpif"/>
+			</Aliases>
+			<Parameters>
+				<InstructionParameter>
+					<MatchingItems>
+						<Item Id="Number"/>
+						<Item Id="Word"/>
+						<Item Id="Register"/>
+					</MatchingItems>
+					<ExpectedValue Type="UInt8" Pos="1" Converter="Register" />
+				</InstructionParameter>
+				<InstructionParameter>
+					<MatchingItems>
+						<Item Id="Number"/>
+						<Item Id="Word"/>
+					</MatchingItems>
+					<ExpectedValue Type="UInt8" Pos="2" Converter="UInt8" />
 				</InstructionParameter>
 			</Parameters>
 		</InstructionDefinition>
@@ -133,13 +174,6 @@
 				<Alias Name="ret"/>
 			</Aliases>
 			<Parameters>
-				<InstructionParameter>
-					<MatchingItems>
-						<Item Id="Number"/>
-						<Item Id="Word"/>
-					</MatchingItems>
-					<ExpectedValue Type="Int32" Pos="4" Converter="Integer32" />
-				</InstructionParameter>
 			</Parameters>
 		</InstructionDefinition>
 		<InstructionDefinition Id="load" PrimaryInstruction="Load" InstructionCount="1">
@@ -175,35 +209,6 @@
 			<Aliases>
 				<Alias Name="save"/>
 				<Alias Name="sd"/>
-			</Aliases>
-			<Parameters>
-				<InstructionParameter>
-					<MatchingItems>
-						<Item Id="Register"/>
-						<Item Id="Word"/>
-					</MatchingItems>
-					<ExpectedValue Type="UInt8" Pos="1" Converter="Register" />
-				</InstructionParameter>
-				<InstructionParameter>
-					<MatchingItems>
-						<Item Id="Number"/>
-						<Item Id="Word"/>
-					</MatchingItems>
-					<ExpectedValue Type="UInt8" Pos="2" Converter="UInt8" />
-				</InstructionParameter>
-				<InstructionParameter>
-					<MatchingItems>
-						<Item Id="Register"/>
-						<Item Id="Word"/>
-					</MatchingItems>
-					<ExpectedValue Type="UInt8" Pos="3" Converter="Register" />
-				</InstructionParameter>
-			</Parameters>
-		</InstructionDefinition>
-		<InstructionDefinition Id="load" PrimaryInstruction="Save" InstructionCount="1">
-			<Aliases>
-				<Alias Name="load"/>
-				<Alias Name="ld"/>
 			</Aliases>
 			<Parameters>
 				<InstructionParameter>

@@ -61,6 +61,10 @@ namespace SVM.Assembler.Core
 			}
 			else
 			{
+				if (TryParseUInt8(input, context, out registerID))
+				{
+					return true;
+				}
 				if (context.IntermediateObject.TryGetConst(input, out var realStr))
 				{
 					return TryParseRegister(realStr, context, out registerID);
