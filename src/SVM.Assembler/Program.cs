@@ -22,6 +22,7 @@ namespace SVM.Assembler
 			List<string> files = new List<string>();
 			List<IntermediateObject> objs = new();
 			string outputfile = "a.out";
+			bool outputDebugSymbol = false;
 			for (int i = 0; i < args.Length; i++)
 			{
 				string? item = args[i];
@@ -30,6 +31,9 @@ namespace SVM.Assembler
 					case "-o":
 						outputfile = args[i + 1];
 						i++;
+						break;
+					case "-d":
+						outputDebugSymbol = true;
 						break;
 					default:
 						if (File.Exists(item))
@@ -71,7 +75,7 @@ namespace SVM.Assembler
 					Console.Error.WriteLine("Linker return no data!");
 					return;
 				}
-				var fResult = Linker.Finialize(def, lResult.Result);
+				var fResult = Linker.Finialize(def, lResult.Result, outputDebugSymbol);
 				if (fResult.HasError())
 				{
 					Console.Error.WriteLine("Finalizer error!");
@@ -88,7 +92,21 @@ namespace SVM.Assembler
 				}
 				if (File.Exists(outputfile)) File.Delete(outputfile);
 				using var stream = File.OpenWrite(outputfile);
-				fResult.Result.WriteToStream(stream);
+				if (!fResult.Result.HasValue)
+				{
+					return;
+				}
+				fResult.Result.Value.program.WriteToStream(stream);
+				if (outputDebugSymbol)
+				{
+					FileInfo fi = new FileInfo(outputfile);
+
+					var dbgFile = Path.Combine(fi.DirectoryName ?? ".", Path.GetFileNameWithoutExtension(outputfile) + ".dbg");
+					File.WriteAllText(dbgFile, JsonConvert.SerializeObject(fResult.Result.Value.context.label, Formatting.Indented, new JsonSerializerSettings()
+					{
+
+					}));
+				}
 			}
 		}
 	}

@@ -1,4 +1,5 @@
 ﻿using SVM.Core;
+using System;
 using System.Collections.Generic;
 
 namespace SVM.Assembler.Core
@@ -26,6 +27,21 @@ namespace SVM.Assembler.Core
 			}
 			return false;
 		}
+		public void FinalizeLabels()
+		{
+
+			int acc = 0;
+			for (int i = 0; i < IntermediateObject.instructions.Count; i++)
+			{
+				IntermediateInstruction? item = IntermediateObject.instructions[i];
+				if (item.Label != null)
+					if (item.Label.Content != null)
+					{
+						this.label.Add(item.Label.Content, acc);
+					}
+				acc += Definition.InstructionDefinitions[item.InstDefID].InstructionCount;
+			}
+		}
 		public bool TryFindLabel(string label, out int offset)
 		{
 			label = label + ":";
@@ -33,7 +49,7 @@ namespace SVM.Assembler.Core
 			{
 				return true;
 			}
-			int acc=0;
+			int acc = 0;
 			for (int i = 0; i < IntermediateObject.instructions.Count; i++)
 			{
 				IntermediateInstruction? item = IntermediateObject.instructions[i];

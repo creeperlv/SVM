@@ -420,11 +420,12 @@ namespace SVM.Assembler.Core
 			result.Result = true;
 			return result;
 		}
-		public unsafe static OperationResult<ManagedSVMProgram?> Finialize(ISADefinition definition, IntermediateObject Obj)
+		public unsafe static OperationResult<(ManagedSVMProgram program, LinkingContext context)?> Finialize(ISADefinition definition, IntermediateObject Obj,bool PreFinalizeLabels)
 		{
-			OperationResult<ManagedSVMProgram?> operationResult = new OperationResult<ManagedSVMProgram?>(null);
+			OperationResult<(ManagedSVMProgram program, LinkingContext context)?> operationResult = new OperationResult<(ManagedSVMProgram program, LinkingContext context)?>(null);
 			ManagedSVMProgram program = new ManagedSVMProgram();
 			LinkingContext context = new LinkingContext(program, Obj, definition);
+
 			List<byte[]> Data = new List<byte[]>();
 			uint offset = 0;
 			foreach (var item in Obj.data)
@@ -481,6 +482,10 @@ namespace SVM.Assembler.Core
 					Data.Add(data2);
 				}
 			}
+			if (PreFinalizeLabels)
+			{
+				context.FinalizeLabels();
+			}
 			foreach (var item in Obj.instructions)
 			{
 				if (definition.InstructionDefinitions.TryGetValue(item.InstDefID, out var def))
@@ -513,7 +518,7 @@ namespace SVM.Assembler.Core
 				Buffer.BlockCopy(item, 0, program.Datas, offset2, item.Length);
 				offset2 += item.Length;
 			}
-			operationResult.Result = program;
+			operationResult.Result = (program, context);
 			return operationResult;
 		}
 	}
