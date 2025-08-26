@@ -21,7 +21,7 @@ jobs:
     - name: Restore dependencies
       run: dotnet restore ./src/SVM.Core/SVM.Core.csproj
     - name: Build
-      run: dotnet build -c:Release --no-restore
+      run: dotnet build -c:Release --no-restore ./src/SVM.Core/SVM.Core.csproj
     - name: Pack
       run: dotnet pack -c:Release ./src/SVM.Core/SVM.Core.csproj
     - name: Publish to NuGet
