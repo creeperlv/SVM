@@ -17,8 +17,8 @@
 		//Cvt	[I]SType	[I]TType	[I]S	[I]T
 		Cvt,
 		// Set Conditional Register to 1 if condition met.
-		// 0	1		2		3		4
-		// Cmp [R]Op	[R]L	[R]R	[R]T
+		// 0	1		2		3		4		5
+		// Cmp [R]Op	[I]Type	[R]L	[R]R	[R]T
 		Cmp,
 		//Set Data to Register
 		//SD T
@@ -75,6 +75,21 @@
 		Float,
 		Double,
 	}
+
+	public enum NativeType : byte
+	{
+		BS = SVMNativeTypes.Int8,
+		BU = SVMNativeTypes.UInt8,
+		S = SVMNativeTypes.Int16, 
+		SU = SVMNativeTypes.UInt16,
+		I = SVMNativeTypes.Int32,
+		IU = SVMNativeTypes.UInt32,
+		L = SVMNativeTypes.Int64,
+		LU = SVMNativeTypes.UInt64,
+		F = SVMNativeTypes.Float, 
+		D = SVMNativeTypes.Double, 
+		R
+	}
 	public enum ConditionFlag : byte
 	{
 		/// <summary>
@@ -108,5 +123,9 @@
 		Tan,
 		Log,
 		Sqrt
+	}
+	public enum CompareOperator : byte
+	{
+		LT = 0, GT = 1, GE = 2, EQ = 3, LE = 4, NE = 5,
 	}
 }

@@ -41,6 +41,10 @@ namespace SVM.Core.Utils
 		{
 			GetDataWithOffsetInStructCount<T>(ptr, (IntPtr)dest, offset);
 		}
+		public static V CastAs<T, V>(this T t, ushort offset = 0) where T : unmanaged where V : unmanaged
+		{
+			return ((V*)&t)[offset];
+		}
 		public static void SetData<T>(this IntPtr ptr, T data) where T : unmanaged
 		{
 			var srcPtr = (byte*)&data;

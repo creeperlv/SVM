@@ -215,6 +215,34 @@ namespace SVM.Core
 						}
 						break;
 					case PrimaryInstruction.Cmp:
+						{
+							var InstAlt = Instruction.CastAs<SVMInstruction, SVMInstruction_InSeparateBytes>(0);
+							var OP = (CompareOperator)InstAlt.D0;
+							switch (OP)
+							{
+								case CompareOperator.LT:
+									CompareFunctions.LT(this.registers, InstAlt);
+									break;
+								case CompareOperator.GT:
+									CompareFunctions.GT(this.registers, InstAlt);
+									break;
+								case CompareOperator.GE:
+									CompareFunctions.GE(this.registers, InstAlt);
+									break;
+								case CompareOperator.EQ:
+									CompareFunctions.EQ(this.registers, InstAlt);
+									break;
+								case CompareOperator.LE:
+									CompareFunctions.LE(this.registers, InstAlt);
+									break;
+								case CompareOperator.NE:
+									CompareFunctions.NE(this.registers, InstAlt);
+									break;
+								default:
+									break;
+							}
+
+						}
 						break;
 					case PrimaryInstruction.SD:
 						{
@@ -549,5 +577,17 @@ namespace SVM.Core
 				return ((PrimaryInstruction*)dataPtr)[0];
 			}
 		}
+	}
+	[StructLayout(LayoutKind.Sequential)]
+	public unsafe struct SVMInstruction_InSeparateBytes
+	{
+		public byte D0;
+		public byte D1;
+		public byte D2;
+		public byte D3;
+		public byte D4;
+		public byte D5;
+		public byte D6;
+		public byte D7;
 	}
 }
