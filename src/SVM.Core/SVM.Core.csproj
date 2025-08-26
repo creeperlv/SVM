@@ -5,6 +5,23 @@
 		<Nullable>enable</Nullable>
 		<AllowUnsafeBlocks>true</AllowUnsafeBlocks>
 		<LangVersion>9.0</LangVersion>
+		<PackageLicenseFile>LICENSE.txt</PackageLicenseFile>
+		<PackageReadmeFile>README.md</PackageReadmeFile>
+		<Description>A Simple Virtual Machine.</Description>
+		<Copyright>Copyright (C) 2025 Creeper Lv</Copyright>
+		<PackageProjectUrl>https://github.com/creeperlv/SVM</PackageProjectUrl>
+		<Title>Simple Virtual Machine</Title>
 	</PropertyGroup>
+
+	<ItemGroup>
+	  <None Include="..\..\LICENSE.txt">
+	    <Pack>True</Pack>
+	    <PackagePath>\</PackagePath>
+	  </None>
+	  <None Include="..\..\README.md">
+	    <Pack>True</Pack>
+	    <PackagePath>\</PackagePath>
+	  </None>
+	</ItemGroup>
 
 </Project>
