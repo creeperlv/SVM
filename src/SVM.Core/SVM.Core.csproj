@@ -11,6 +11,7 @@
 		<Copyright>Copyright (C) 2025 Creeper Lv</Copyright>
 		<PackageProjectUrl>https://github.com/creeperlv/SVM</PackageProjectUrl>
 		<Title>Simple Virtual Machine</Title>
+		<PackageId>CreeperLv.$(AssemblyName)</PackageId>
 	</PropertyGroup>
 
 	<ItemGroup>
